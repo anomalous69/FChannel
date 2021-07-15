@@ -447,7 +447,6 @@ func main() {
 	http.HandleFunc("/" + *Key + "/", func(w http.ResponseWriter, r *http.Request) {
 
 		id, _ := GetPasswordFromSession(r)
-		
 		actor := GetActorFromPath(db, r.URL.Path, "/" + *Key + "/")
 
 		if actor.Id == "" {
@@ -475,34 +474,63 @@ func main() {
 		if follow || adminFollow {
 			r.ParseForm()
 
+			following := regexp.MustCompile(`(.+)\/following`)
+			followers := regexp.MustCompile(`(.+)\/followers`)
 
-			var followActivity Activity
+			follow := r.FormValue("follow")
+			actorId := r.FormValue("actor")
 
-			followActivity.AtContext.Context = "https://www.w3.org/ns/activitystreams"
-			followActivity.Type = "Follow"
-			
+			//follow all of boards following
+			if following.MatchString(follow) {
+				followingActor := FingerActor(follow)
+				col := GetActorCollection(followingActor.Following)
+				
+				var nObj ObjectBase
+				nObj.Id = followingActor.Id
 
-			var obj ObjectBase
-			var nactor Actor
-			if r.FormValue("actor") == Domain {
-				nactor = GetActorFromDB(db, r.FormValue("actor"))
+				col.Items = append(col.Items, nObj)
+				
+				for _, e := range col.Items {
+					if !IsAlreadyFollowing(db, actorId, e.Id) && e.Id != Domain && e.Id != actorId {
+						followActivity := MakeFollowActivity(db, actorId, e.Id)
+
+						if FingerActor(e.Id).Id != "" {
+							MakeActivityRequestOutbox(db, followActivity)
+						}					
+					}
+				}
+				
+			//follow all of boards followers
+			} else if followers.MatchString(follow){
+				followersActor := FingerActor(follow)
+				col := GetActorCollection(followersActor.Followers)
+
+				var nObj ObjectBase
+				nObj.Id = followersActor.Id
+
+				col.Items = append(col.Items, nObj)				
+				
+				for _, e := range col.Items {
+					if !IsAlreadyFollowing(db, actorId, e.Id) && e.Id != Domain && e.Id != actorId {
+						followActivity := MakeFollowActivity(db, actorId, e.Id)
+						if FingerActor(e.Id).Id != "" {
+							MakeActivityRequestOutbox(db, followActivity)
+						}					
+					}
+				}
+				
+		  //do a normal follow to a single board
 			} else {
-				nactor = FingerActor(r.FormValue("actor"))			
-			}
-			
-			followActivity.Actor = &nactor
-			followActivity.Object = &obj
+				followActivity := MakeFollowActivity(db, actorId, follow)
 
-			followActivity.Object.Actor = r.FormValue("follow")
-			followActivity.To = append(followActivity.To, r.FormValue("follow"))
+				if followActivity.Actor.Id == Domain && !IsActorLocal(db, followActivity.Object.Actor) {
+					w.Write([]byte("main board can only follow local boards. Create a new board and then follow outside boards from it."))
+					return
+				}
 
-			if followActivity.Actor.Id == Domain && !IsActorLocal(db, followActivity.Object.Actor) {
-				w.Write([]byte("main board can only follow local boards. Create a new board and then follow outside boards from it."))
-				return
-			}
-
-			if FingerActor(r.FormValue("follow")).Id != "" {
-				MakeActivityRequestOutbox(db, followActivity)
+				if FingerActor(follow).Id != "" {
+					MakeActivityRequestOutbox(db, followActivity)
+				}
 			}
 
 			var redirect string
@@ -566,6 +594,7 @@ func main() {
 
 			adminData.Board.Post.Actor = actor.Id
 
+			adminData.AutoSubscribe = GetActorAutoSubscribeDB(db, actor.Id);
 
 
 			t.ExecuteTemplate(w, "layout", adminData)
@@ -609,15 +638,10 @@ func main() {
 
 	http.HandleFunc("/" + *Key + "/addboard", func(w http.ResponseWriter, r *http.Request) {
 
-		id, _ := GetPasswordFromSession(r)
-		
 		actor := GetActorFromDB(db, Domain)
 
-
-		if id == "" || (id != actor.Id && id != Domain) {
-			t := template.Must(template.ParseFiles("./static/verify.html"))
-			t.Execute(w, "")
-			return
+		if !HasValidation(w, r, actor) {
+			return 
 		}
 		
 		var newActorActivity Activity
@@ -654,14 +678,9 @@ func main() {
 	
 	http.HandleFunc("/" + *Key + "/postnews", func(w http.ResponseWriter, r *http.Request) {
 
-		id, _ := GetPasswordFromSession(r)
-		
 		actor := GetActorFromDB(db, Domain)
 
-
-		if id == "" || (id != actor.Id && id != Domain) {
-			t := template.Must(template.ParseFiles("./static/verify.html"))
-			t.Execute(w, "")
+		if !HasValidation(w, r, actor) {
 			return
 		}
 		
@@ -677,14 +696,9 @@ func main() {
 	
 	http.HandleFunc("/" + *Key + "/newsdelete/", func(w http.ResponseWriter, r *http.Request){
 
-		id, _ := GetPasswordFromSession(r)
-		
 		actor := GetActorFromDB(db, Domain)
 
-
-		if id == "" || (id != actor.Id && id != Domain) {
-			t := template.Must(template.ParseFiles("./static/verify.html"))
-			t.Execute(w, "")
+		if !HasValidation(w, r, actor) {
 			return
 		}
 		
@@ -1219,12 +1233,9 @@ func main() {
 
 	http.HandleFunc("/blacklist", func(w http.ResponseWriter, r *http.Request) {
 
-		id, _ := GetPasswordFromSession(r)
-		
 		actor := GetActorFromDB(db, Domain)
 
-		if id == "" || (id != actor.Id && id != Domain) {
-			http.Redirect(w, r, "/", http.StatusSeeOther)			
+		if !HasValidation(w, r, actor) {
 			return
 		}
 
@@ -1263,7 +1274,26 @@ func main() {
 		if r.URL.Query().Get("hash") != "" {
 			RouteImages(w, r.URL.Query().Get("hash"))
 		}
-	})	
+	})
+
+	http.HandleFunc("/autosubscribe", func(w http.ResponseWriter, r *http.Request) {
+
+		if !HasValidation(w, r, GetActorFromDB(db, Domain)) {
+			return
+		}
+
+		board := r.URL.Query().Get("board")
+		actor := GetActorByNameFromDB(db, board)
+		
+		SetActorAutoSubscribeDB(db, actor.Id)
+		autoSub := GetActorAutoSubscribeDB(db, actor.Id)
+
+		if autoSub {
+			AutoFollow(db, actor.Id)
+		}
+		
+		http.Redirect(w, r, "/" + *Key + "/" + board, http.StatusSeeOther)				
+	})		
 
 	fmt.Println("Server for " + Domain + " running on port " + Port)
 
@@ -2679,4 +2709,15 @@ func IsPostBlacklist(db *sql.DB, comment string) bool {
 	}
 
 	return false
+}
+
+func HasValidation(w http.ResponseWriter, r *http.Request, actor Actor) bool {
+		id, _ := GetPasswordFromSession(r)
+		
+		if id == "" || (id != actor.Id && id != Domain) {
+			http.Redirect(w, r, "/", http.StatusSeeOther)			
+			return false
+		}
+
+	return true
 }

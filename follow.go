@@ -152,16 +152,21 @@ func RejectActivity(activity Activity) Activity {
 	return accept	
 }
 
-func SetActorFollowerDB(db *sql.DB, activity Activity) Activity {
-	var query string
-	alreadyFollow := false
-	followers := GetActorFollowDB(db, activity.Actor.Id)
+func IsAlreadyFollowing(db *sql.DB, actor string, follow string) bool {
+	followers := GetActorFollowingDB(db, actor)
 	
 	for _, e := range followers {
-		if e.Id == activity.Object.Actor {
-			alreadyFollow = true
+		if e.Id == follow {
+			return true
 		}
 	}
+
+	return false;
+}	
+
+func SetActorFollowerDB(db *sql.DB, activity Activity) Activity {
+	var query string
+	alreadyFollow := IsAlreadyFollowing(db, activity.Actor.Id, activity.Object.Actor)
 
 	if alreadyFollow {
 		query = `delete from follower where id=$1 and follower=$2`
@@ -216,4 +221,50 @@ func SetActorFollowingDB(db *sql.DB, activity Activity) Activity {
 	
 	activity.Type = "Accept"
 	return	activity
+}
+
+func AutoFollow(db *sql.DB, actor string) {
+	following := GetActorFollowingDB(db, actor)
+	follower := GetActorFollowDB(db, actor)
+
+	isFollowing := false
+	
+	for _, e := range follower {
+		for _, k := range following {
+			if e.Id == k.Id {
+				isFollowing = true
+			}
+		}
+
+		if !isFollowing && e.Id != Domain {
+			followActivity := MakeFollowActivity(db, actor, e.Id)	
+
+			if FingerActor(e.Id).Id != "" {
+				MakeActivityRequestOutbox(db, followActivity)
+			}	
+		}
+	}
+}
+
+func MakeFollowActivity(db *sql.DB, actor string, follow string) Activity {
+	var followActivity Activity
+
+	followActivity.AtContext.Context = "https://www.w3.org/ns/activitystreams"
+	followActivity.Type = "Follow"
+	
+	var obj ObjectBase
+	var nactor Actor
+	if actor == Domain {
+		nactor = GetActorFromDB(db, actor)
+	} else {
+		nactor = FingerActor(actor)			
+	}
+	
+	followActivity.Actor = &nactor
+	followActivity.Object = &obj
+
+	followActivity.Object.Actor = follow
+	followActivity.To = append(followActivity.To, follow)
+
+	return followActivity
 }
