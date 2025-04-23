@@ -1,10 +1,9 @@
 package activitypub
 
 import (
-	"time"
-
 	"encoding/json"
 	"html/template"
+	"time"
 )
 
 type AtContextRaw struct {
@@ -195,6 +194,36 @@ type CollectionBase struct {
 	TotalImgs    int          `json:"totalImgs,omitempty"`
 	OrderedItems []ObjectBase `json:"orderedItems,omitempty"`
 	Items        []ObjectBase `json:"items,omitempty"`
+}
+
+// UnmarshalJSON for CollectionBase supports both string and object for the actor field.
+func (cb *CollectionBase) UnmarshalJSON(data []byte) error {
+	type Alias CollectionBase // Prevent recursion
+	aux := &struct {
+		Actor json.RawMessage `json:"actor,omitempty"`
+		*Alias
+	}{
+		Alias: (*Alias)(cb),
+	}
+	if err := json.Unmarshal(data, aux); err != nil {
+		return err
+	}
+	// Handle actor field being string or object
+	if len(aux.Actor) == 0 || string(aux.Actor) == "null" {
+		cb.Actor = nil
+		return nil
+	}
+	var actorStr string
+	if err := json.Unmarshal(aux.Actor, &actorStr); err == nil {
+		cb.Actor = &Actor{Id: actorStr}
+		return nil
+	}
+	var actorObj Actor
+	if err := json.Unmarshal(aux.Actor, &actorObj); err == nil {
+		cb.Actor = &actorObj
+		return nil
+	}
+	return nil // fallback: ignore actor if not parseable
 }
 
 type Collection struct {
