@@ -105,6 +105,10 @@ func ParseOutboxRequest(ctx *fiber.Ctx, actor activitypub.Actor) error {
 				}
 			}
 
+			if !actor.Restricted {
+				nObj.Sensitive = true
+			}
+
 			if actor.Name == "int" || actor.Name == "bint" {
 				nObj.Alias = "cc:" + util.GetCC(ctx.Get("PosterIP"))
 			}
