@@ -304,3 +304,20 @@ func SupportedMIMEType(mime string) bool {
 	}
 	return false
 }
+
+func GetActorIdFromObjectId(objectId string) string {
+	parts := strings.SplitN(objectId, "://", 2)
+	if len(parts) != 2 {
+		return ""
+	}
+	path := parts[1]
+	pathParts := strings.SplitN(path, "/", 2)
+	if len(pathParts) != 2 {
+		return ""
+	}
+	boardParts := strings.SplitN(pathParts[1], "/", 2)
+	if len(boardParts) < 1 {
+		return ""
+	}
+	return parts[0] + "://" + pathParts[0] + "/" + boardParts[0]
+}

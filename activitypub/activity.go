@@ -130,9 +130,31 @@ func (activity Activity) GetCollection() (Collection, error) {
 		defer resp.Body.Close()
 		body, _ := io.ReadAll(resp.Body)
 		if len(body) > 0 {
-			if err := json.Unmarshal(body, &nColl); err != nil {
-				return nColl, util.MakeError(err, "GetCollection")
+			// Try to unmarshal as Collection
+			if err := json.Unmarshal(body, &nColl); err == nil {
+				// Handle "fake" collection (single Note with empty items)
+				if nColl.Type == "Note" && len(nColl.OrderedItems) == 0 && len(nColl.Items) == 0 {
+					var nObj ObjectBase
+					if err := json.Unmarshal(body, &nObj); err == nil && nObj.Type != "" {
+						nColl.Type = "Collection"
+						nColl.OrderedItems = []ObjectBase{nObj}
+						nColl.TotalItems = 1
+					}
+				}
+				return nColl, nil
 			}
+
+			// Try to unmarshal as ObjectBase (single Note)
+			var nObj ObjectBase
+			if err := json.Unmarshal(body, &nObj); err == nil && nObj.Type != "" {
+				nColl.Type = "Collection"
+				nColl.OrderedItems = []ObjectBase{nObj}
+				nColl.TotalItems = 1
+				return nColl, nil
+			}
+
+			// If neither, return error
+			return nColl, util.MakeError(err, "GetCollection")
 		}
 	}
 

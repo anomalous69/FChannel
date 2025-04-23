@@ -554,6 +554,19 @@ func (actor Actor) GetCollectionTypeLimit(nType string, limit int) (Collection, 
 	return nColl, nil
 }
 
+func (actor Actor) IsFollowing(following string) (bool, error) {
+	query := `select following from following where id=$1 and following=$2`
+	var followingId string
+	err := config.DB.QueryRow(query, actor.Id, following).Scan(&followingId)
+	if err == sql.ErrNoRows {
+		return false, nil
+	}
+	if err != nil {
+		return false, util.MakeError(err, "IsFollowing")
+	}
+	return true, nil
+}
+
 func (actor Actor) GetFollower() ([]ObjectBase, error) {
 	var followerCollection []ObjectBase
 
@@ -1226,6 +1239,40 @@ func (actor Actor) GetJanitors() ([]util.Verify, error) {
 func (actor Actor) ProcessInboxCreate(activity Activity) error {
 	if local, _ := actor.IsLocal(); local {
 		if local, _ := activity.Actor.IsLocal(); !local {
+			isFollowing, err := actor.IsFollowing(activity.Actor.Id)
+			if err != nil {
+				return util.MakeError(err, "ActorInbox")
+			}
+			if !isFollowing {
+				return nil
+			}
+
+			// Attempt to fetch InReplyTo collections if missing locally
+			if len(activity.Object.InReplyTo) > 0 {
+				for _, inReplyTo := range activity.Object.InReplyTo {
+					col, err := inReplyTo.GetCollectionLocal()
+					if err != nil || len(col.OrderedItems) == 0 {
+						// Check if following the inReplyTo actor/board
+						inReplyToActorId := util.GetActorIdFromObjectId(inReplyTo.Id)
+						isFollowingInReplyTo, err := actor.IsFollowing(inReplyToActorId)
+						if err != nil {
+							return util.MakeError(err, "ActorInbox: IsFollowing(inReplyTo)")
+						}
+						if isFollowingInReplyTo {
+							remoteCol, fetchErr := Activity{Id: inReplyTo.Id}.GetCollection()
+							if fetchErr != nil || len(remoteCol.OrderedItems) == 0 {
+								return util.MakeError(fetchErr, "ActorInbox: failed to fetch InReplyTo collection")
+							}
+							for _, post := range remoteCol.OrderedItems {
+								if _, err := post.WriteCache(); err != nil {
+									return util.MakeError(err, "ActorInbox: failed to store remote InReplyTo post")
+								}
+							}
+						}
+					}
+				}
+			}
+
 			reqActivity := Activity{Id: activity.Object.Id}
 			col, err := reqActivity.GetCollection()
 			if err != nil {
@@ -1364,7 +1411,7 @@ func (actor Actor) GetRecentThreads() (Collection, error) {
 			and a.id in (select id from replies where inreplyto='')
 			and a.type='Note'
 			and a.id not in (select activity_id from sticky where actor_id=$1)
-		union
+	union
 		select id, name, content, type, published, updated, attributedto, attachment, preview, actor, tripcode, sensitive
 		from cacheactivitystream
 		where actor in (select following from following where id in (select following from following where id=$1))
