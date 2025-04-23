@@ -64,7 +64,7 @@ func GetThreadFeed(ctx *fiber.Ctx) error {
 		err = rows.Scan(&Id, &Name, &Content, &Published, &AttributedTo, &Attachment, &Preview, &Actor, &TripCode, &Sensitive)
 
 		if err != nil {
-			return util.MakeError(err, "GetRecentThreads")
+			return util.MakeError(err, "GetThreadFeed")
 		}
 
 		if len(AttributedTo) == 0 {
@@ -188,7 +188,7 @@ func GetBoardFeed(ctx *fiber.Ctx) error {
 		err = rows.Scan(&Id, &Name, &Content, &Published, &AttributedTo, &Attachment, &Preview, &Actor, &TripCode, &Sensitive)
 
 		if err != nil {
-			return util.MakeError(err, "GetRecentThreads")
+			return util.MakeError(err, "GetBoardFeed")
 		}
 
 		if len(AttributedTo) == 0 {

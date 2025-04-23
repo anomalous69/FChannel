@@ -612,3 +612,7 @@ div.pagelist div.cataloglink {
 .nsfw .cross{
   background-image: url(/static/cross-nsfw.png);
 }
+
+.newthreadsbox :is(img,video,audio) {
+  border: #800 solid 1px;
+}

@@ -53,13 +53,13 @@
       <div class="newthreadsbox-thread">
         <div class="newthreadsbox-board">{{ .Actor }}</div>
         {{ if .Attachment }}
-        <a id="{{ .Id }}-anchor" href="{{ .Id }}">
-          <div id="media-{{ .Id }}" style="width:180px;"><div class="status" style="position: absolute;">{{ if .Sticky }}<span class="sticky"><img src="/static/pin.png"></span>{{ end }}{{ if .Locked }}<span class="lock"><img src="/static/locked.png"></span>{{ end }}</div>{{ if .Sensitive }} <img src="/static/sensitive.png" style="max-width: 180px; max-height: 180px;">{{ else }}{{ parseAttachment . true }}{{ end }}</div>
+        <a href="{{ .Id }}">
+          <div style="width:180px;"><div class="status" style="position: absolute;">{{ if .Locked }}<span class="lock"><img src="/static/locked.png"></span>{{ end }}</div>{{ if .Sensitive }}<div style="width: 168px; position: absolute; margin-top: 85px; padding: 5px; background-color: black; color: white;">NSFW</div><img src="/static/sensitive.png" style="max-width: 180px; max-height: 180px;">{{ else }}{{ parseAttachment . true }}{{ end }}</div>
         </a>
         {{ end }}
-        <a style="color: unset;" id="{{ .Id }}-link" href="{{ .Id }}">
+        <a style="color: unset;" href="{{ .Id }}">
           <div style="display: -webkit-box;
-  -webkit-line-clamp: 5;
+  -webkit-line-clamp: {{ if .Attachment }}5{{else}}13{{end}};
   -webkit-box-orient: vertical;
   overflow-y: auto;overflow-x: hidden;">
             {{ if .Name }}<b>{{ .Name }}{{ if .Content }}:{{ end }}</b>{{ end }}{{ if .Content }} {{formatContent .Content}}{{ end }}

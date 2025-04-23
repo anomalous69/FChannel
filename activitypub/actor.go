@@ -1331,7 +1331,23 @@ func (actor Actor) GetRecentThreads() (Collection, error) {
 
 	// Selects 6 most recently created local/remote threads
 	// Will exclude "hidden" boards when main actor used (only display local boards followed by main actor, and remote boards where the local actor is followed by the main actor)
-	query := `select x.id, x.name, x.content, x.type, x.published, x.updated, x.attributedto, x.attachment, x.preview, x.actor, x.tripcode, x.sensitive from (select id, name, content, type, published, updated, attributedto, attachment, preview, actor, tripcode, sensitive from activitystream where actor in (select following from following where id='https://usagi.reisen') and id in (select id from replies where inreplyto='') and type='Note' and id not in (select activity_id from sticky where actor_id=$1) union select id, name, content, type, published, updated, attributedto, attachment, preview, actor, tripcode, sensitive from cacheactivitystream where actor in (select following from following where id in (select following from following where id=$1)) and id in (select id from replies where inreplyto='') and type='Note' and id not in (select activity_id from sticky where actor_id=$1)) as x order by x.published desc limit 6`
+	query := `select x.id, x.name, x.content, x.type, x.published, x.updated, x.attributedto, x.attachment, x.preview, x.actor, x.tripcode, x.sensitive from (
+		select a.id, a.name, a.content, a.type, a.published, a.updated, a.attributedto, a.attachment, a.preview,
+			actor.preferedusername as actor, a.tripcode, a.sensitive
+		from activitystream a
+		join actor on actor.id = a.actor
+		where a.actor in (select following from following where id=$1)
+			and a.id in (select id from replies where inreplyto='')
+			and a.type='Note'
+			and a.id not in (select activity_id from sticky where actor_id=$1)
+		union
+		select id, name, content, type, published, updated, attributedto, attachment, preview, actor, tripcode, sensitive
+		from cacheactivitystream
+		where actor in (select following from following where id in (select following from following where id=$1))
+			and id in (select id from replies where inreplyto='')
+			and type='Note'
+			and id not in (select activity_id from sticky where actor_id=$1)
+	) as x order by x.published desc limit 6`
 
 	if rows, err = config.DB.Query(query, actor.Id); err != nil {
 		return nColl, util.MakeError(err, "GetRecentThreads")

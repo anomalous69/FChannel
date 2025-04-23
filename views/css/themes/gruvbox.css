@@ -459,3 +459,7 @@ div.pagelist div.cataloglink {
   width: 18px;
   height: 18px;
 }
+
+.newthreadsbox :is(img,video,audio) {
+  border:#b16286 solid 1px;
+}
