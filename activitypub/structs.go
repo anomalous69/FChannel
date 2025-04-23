@@ -139,7 +139,7 @@ type ObjectBase struct {
 	To           []string          `json:"to,omitempty"`
 	Bto          []string          `json:"bto,omitempty"`
 	Cc           []string          `json:"cc,omitempty"`
-	Bcc          string            `json:"Bcc,omitempty"`
+	Bcc          []string          `json:"Bcc,omitempty"`
 	MediaType    string            `json:"mediatype,omitempty"`
 	Duration     string            `json:"duration,omitempty"`
 	Size         int64             `json:"size,omitempty"`
@@ -180,7 +180,7 @@ type NestedObjectBase struct {
 	To           []string        `json:"to,omitempty"`
 	Bto          []string        `json:"bto,omitempty"`
 	Cc           []string        `json:"cc,omitempty"`
-	Bcc          string          `json:"Bcc,omitempty"`
+	Bcc          []string        `json:"Bcc,omitempty"`
 	MediaType    string          `json:"mediatype,omitempty"`
 	Duration     string          `json:"duration,omitempty"`
 	Size         int64           `json:"size,omitempty"`

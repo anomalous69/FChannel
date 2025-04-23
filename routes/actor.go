@@ -29,14 +29,21 @@ func ActorInbox(ctx *fiber.Ctx) error {
 	if err != nil {
 		return util.MakeError(err, "ActorInbox")
 	}
-
-	if activity.Actor.PublicKey.Id == "" {
-		nActor, err := activitypub.FingerActor(activity.Actor.Id)
+	if activity.Actor == nil || activity.Actor.PublicKey == nil || activity.Actor.PublicKey.Id == "" {
+		nActor, err := activitypub.FingerActor("")
+		if activity.Actor != nil {
+			if activity.Actor.Id != "" {
+				nActor, err = activitypub.FingerActor(activity.Actor.Id)
+			}
+		}
 		if err != nil {
 			return util.MakeError(err, "ActorInbox")
 		}
 
 		activity.Actor = &nActor
+	}
+	if activity.Actor == nil || activity.Actor.PublicKey == nil || activity.Actor.PublicKey.Id == "" {
+		return util.MakeError(errors.New("missing actor or public key for signature verification"), "ActorInbox")
 	}
 
 	if !activity.Actor.VerifyHeaderSignature(ctx) {
@@ -380,7 +387,6 @@ func MakeActorPost(ctx *fiber.Ctx) error {
 	//sendTo = actorid + "/outbox"
 	//actor, _ := activitypub.GetActorFromPath(actorid, "/")
 	//sendTo = actor.Outbox
-	//}
 	//}
 
 	req, err := http.NewRequest("POST", sendTo, &b)

@@ -15,16 +15,16 @@ import (
 
 func GetThreadFeed(ctx *fiber.Ctx) error {
 	actor, err := activitypub.GetActorFromDB(config.Domain + "/" + ctx.Params("actor"))
-	if err != nil {
+	if err != nil || actor.Id == "" {
 		return Send404(ctx, "Board /"+ctx.Params("actor")+"/ does not exist")
 	}
 	thread, err := db.GetPostIDFromNum(ctx.Params("post"))
-	if err != nil {
-		return Send404(ctx, "Thread "+thread+"does not exist")
+	if err != nil || thread == "" {
+		return Send404(ctx, "Thread "+ctx.Params("post")+" does not exist")
 	}
 
 	if !db.IsValidThread(thread) {
-		return Send404(ctx, "Thread "+thread+"does not exist")
+		return Send404(ctx, "Thread "+ctx.Params("post")+" does not exist")
 	}
 	feedtype := ctx.Params("feedtype")
 
@@ -103,7 +103,9 @@ func GetThreadFeed(ctx *fiber.Ctx) error {
 			Enclosure:   &feeds.Enclosure{Url: Attachment, Type: MediaType},
 			Created:     Published, // Post time
 		}
-		feed.Add(feedItem)
+		if feedItem.Id != "" && feedItem.Link != nil && feedItem.Author != nil {
+			feed.Add(feedItem)
+		}
 	}
 	var feedContent string
 	switch feedtype {
@@ -125,7 +127,7 @@ func GetThreadFeed(ctx *fiber.Ctx) error {
 	}
 
 	//TODO: Handle these
-	if len(feed.Items) > 0 {
+	if len(feed.Items) > 0 && feed.Items[0] != nil {
 		ctx.Set("Etag", feed.Items[0].Id)
 		ctx.Set("Last-Modified", feed.Items[0].Created.UTC().String())
 	} else {
@@ -137,7 +139,7 @@ func GetThreadFeed(ctx *fiber.Ctx) error {
 
 func GetBoardFeed(ctx *fiber.Ctx) error {
 	actor, err := activitypub.GetActorFromDB(config.Domain + "/" + ctx.Params("actor"))
-	if err != nil {
+	if err != nil || actor.Id == "" {
 		return Send404(ctx, "Board /"+ctx.Params("actor")+"/ does not exist")
 	}
 	feedtype := ctx.Params("feedtype")
@@ -231,7 +233,9 @@ func GetBoardFeed(ctx *fiber.Ctx) error {
 			Enclosure:   &feeds.Enclosure{Url: Attachment, Type: MediaType},
 			Created:     Published, // Post time
 		}
-		feed.Add(feedItem)
+		if feedItem.Id != "" && feedItem.Link != nil && feedItem.Author != nil {
+			feed.Add(feedItem)
+		}
 	}
 
 	var feedContent string
@@ -254,7 +258,7 @@ func GetBoardFeed(ctx *fiber.Ctx) error {
 	}
 
 	//TODO: Handle these
-	if len(feed.Items) > 0 {
+	if len(feed.Items) > 0 && feed.Items[0] != nil {
 		ctx.Set("Etag", feed.Items[0].Id)
 		ctx.Set("Last-Modified", feed.Items[0].Created.UTC().String())
 	} else {

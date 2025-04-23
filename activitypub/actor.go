@@ -1005,6 +1005,10 @@ func (actor Actor) Verify(signature string, verify string) error {
 }
 
 func (actor Actor) VerifyHeaderSignature(ctx *fiber.Ctx) bool {
+	if actor.PublicKey == nil || actor.PublicKey.Id == "" {
+		return false
+	}
+
 	var sig string
 	var path string
 	var host string
