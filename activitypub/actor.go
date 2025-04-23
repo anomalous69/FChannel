@@ -48,7 +48,7 @@ func (actor Actor) ActivitySign(signature string) (string, error) {
 	if err != nil {
 		config.Log.Println(`\n Unable to locate private key. Now,
 this means that you are now missing the proof that you are the
-owner of the "` + actor.Name + `" board. If you are the developer,
+owner of the "` + actor.PreferredUsername + `" board. If you are the developer,
 then your job is just as easy as generating a new keypair, but
 if this board is live, then you'll also have to convince the other
 owners to switch their public keys for you so that they will start
@@ -215,7 +215,13 @@ func (actor Actor) GetCatalogCollection() (Collection, error) {
 	var err error
 	var rows *sql.Rows
 
-	query := `select x.id, x.name, x.content, x.type, x.published, x.updated, x.attributedto, x.attachment, x.preview, x.actor, x.tripcode, x.sensitive from (select id, name, content, type, published, updated, attributedto, attachment, preview, actor, tripcode, sensitive from activitystream where actor=$1 and id in (select id from replies where inreplyto='') and type='Note' and id not in (select activity_id from sticky where actor_id=$1) union select id, name, content, type, published, updated, attributedto, attachment, preview, actor, tripcode, sensitive from activitystream where actor in (select following from following where id=$1) and id in (select id from replies where inreplyto='') and type='Note' and id not in (select activity_id from sticky where actor_id=$1) union select id, name, content, type, published, updated, attributedto, attachment, preview, actor, tripcode, sensitive from cacheactivitystream where actor in (select following from following where id=$1) and id in (select id from replies where inreplyto='') and type='Note' and id not in (select activity_id from sticky where actor_id=$1)) as x order by x.updated desc limit 165`
+	query := `select x.id, x.name, x.content, x.type, x.published, x.updated, x.attributedto, x.attachment, x.preview, x.actor, x.tripcode, x.sensitive from (
+		select id, name, content, type, published, updated, attributedto, attachment, preview, actor, tripcode, sensitive from activitystream where actor=$1 and id in (select id from replies where inreplyto='') and type='Note' and id not in (select activity_id from sticky where actor_id=$1)
+		union
+		select id, name, content, type, published, updated, attributedto, attachment, preview, actor, tripcode, sensitive from activitystream where actor in (select following from following where id=$1) and id in (select id from replies where inreplyto='') and type='Note' and id not in (select activity_id from sticky where actor_id=$1)
+		union
+		select id, name, content, type, published, updated, attributedto, attachment, preview, actor, tripcode, sensitive from cacheactivitystream where actor in (select following from following where id=$1) and id in (select id from replies where inreplyto='') and type='Note' and id not in (select activity_id from sticky where actor_id=$1)
+	) as x order by x.updated desc limit 165`
 
 	if rows, err = config.DB.Query(query, actor.Id); err != nil {
 		return nColl, util.MakeError(err, "GetCatalogCollection")
@@ -282,7 +288,13 @@ func (actor Actor) GetCollectionPage(page int) (Collection, error) {
 	var err error
 	var rows *sql.Rows
 
-	query := `select count (x.id) over(), x.id, x.name, x.alias, x.content, x.type, x.published, x.updated, x.attributedto, x.attachment, x.preview, x.actor, x.tripcode, x.sensitive from (select id, name, alias, content, type, published, updated, attributedto, attachment, preview, actor, tripcode, sensitive from activitystream where actor=$1 and id in (select id from replies where inreplyto='') and type='Note' and id not in (select activity_id from sticky where actor_id=$1) union select id, name, alias, content, type, published, updated, attributedto, attachment, preview, actor, tripcode, sensitive from activitystream where actor in (select following from following where id=$1) and id in (select id from replies where inreplyto='') and type='Note' and id not in (select activity_id from sticky where actor_id=$1) union select id, name, alias, content, type, published, updated, attributedto, attachment, preview, actor, tripcode, sensitive from cacheactivitystream where id not in (select activity_id from sticky where actor_id=$1) and actor in (select following from following where id=$1) and id in (select id from replies where inreplyto='') and type='Note') as x order by x.updated desc limit $2 offset $3`
+	query := `select count (x.id) over(), x.id, x.name, x.alias, x.content, x.type, x.published, x.updated, x.attributedto, x.attachment, x.preview, x.actor, x.tripcode, x.sensitive from (
+		select id, name, alias, content, type, published, updated, attributedto, attachment, preview, actor, tripcode, sensitive from activitystream where actor=$1 and id in (select id from replies where inreplyto='') and type='Note' and id not in (select activity_id from sticky where actor_id=$1)
+		union
+		select id, name, alias, content, type, published, updated, attributedto, attachment, preview, actor, tripcode, sensitive from activitystream where actor in (select following from following where id=$1) and id in (select id from replies where inreplyto='') and type='Note' and id not in (select activity_id from sticky where actor_id=$1)
+		union
+		select id, name, alias, content, type, published, updated, attributedto, attachment, preview, actor, tripcode, sensitive from cacheactivitystream where id not in (select activity_id from sticky where actor_id=$1) and actor in (select following from following where id=$1) and id in (select id from replies where inreplyto='') and type='Note'
+	) as x order by x.updated desc limit $2 offset $3`
 
 	limit := 15
 
@@ -418,7 +430,13 @@ func (actor Actor) GetCollectionType(nType string) (Collection, error) {
 	var nColl Collection
 	var result []ObjectBase
 
-	query := `select x.id, x.name, x.alias, x.content, x.type, x.published, x.updated, x.attributedto, x.attachment, x.preview, x.actor, x.tripcode, x.sensitive from (select id, name, alias, content, type, published, updated, attributedto, attachment, preview, actor, tripcode, sensitive from activitystream where actor=$1 and id in (select id from replies where inreplyto='') and type=$2 and id not in (select activity_id from sticky where actor_id=$1) union select id, name, alias, content, type, published, updated, attributedto, attachment, preview, actor, tripcode, sensitive from activitystream where actor in (select following from following where id=$1) and id in (select id from replies where inreplyto='') and type=$2 and id not in (select activity_id from sticky where actor_id=$1) union select id, name, alias, content, type, published, updated, attributedto, attachment, preview, actor, tripcode, sensitive from cacheactivitystream where actor in (select following from following where id=$1) and id in (select id from replies where inreplyto='') and type=$2 and id not in (select activity_id from sticky where actor_id=$1)) as x order by x.updated desc`
+	query := `select x.id, x.name, x.alias, x.content, x.type, x.published, x.updated, x.attributedto, x.attachment, x.preview, x.actor, x.tripcode, x.sensitive from (
+		select id, name, alias, content, type, published, updated, attributedto, attachment, preview, actor, tripcode, sensitive from activitystream where actor=$1 and id in (select id from replies where inreplyto='') and type=$2 and id not in (select activity_id from sticky where actor_id=$1)
+		union
+		select id, name, alias, content, type, published, updated, attributedto, attachment, preview, actor, tripcode, sensitive from activitystream where actor in (select following from following where id=$1) and id in (select id from replies where inreplyto='') and type=$2 and id not in (select activity_id from sticky where actor_id=$1)
+		union
+		select id, name, alias, content, type, published, updated, attributedto, attachment, preview, actor, tripcode, sensitive from cacheactivitystream where actor in (select following from following where id=$1) and id in (select id from replies where inreplyto='') and type=$2 and id not in (select activity_id from sticky where actor_id=$1)
+	) as x order by x.updated desc`
 	rows, err := config.DB.Query(query, actor.Id, nType)
 	if err != nil {
 		return nColl, util.MakeError(err, "GetCollectionType")
@@ -479,7 +497,13 @@ func (actor Actor) GetCollectionTypeLimit(nType string, limit int) (Collection, 
 	var nColl Collection
 	var result []ObjectBase
 
-	query := `select x.id, x.name, x.alias, x.content, x.type, x.published, x.updated, x.attributedto, x.attachment, x.preview, x.actor, x.tripcode, x.sensitive from (select id, name, alias, content, type, published, updated, attributedto, attachment, preview, actor, tripcode, sensitive from activitystream where actor=$1 and id in (select id from replies where inreplyto='') and type=$2 union select id, name, alias, content, type, published, updated, attributedto, attachment, preview, actor, tripcode, sensitive from activitystream where actor in (select following from following where id=$1) and id in (select id from replies where inreplyto='') and type=$2 union select id, name, alias, content, type, published, updated, attributedto, attachment, preview, actor, tripcode, sensitive from cacheactivitystream where actor in (select following from following where id=$1) and id in (select id from replies where inreplyto='') and type=$2) as x order by x.updated desc limit $3`
+	query := `select x.id, x.name, x.alias, x.content, x.type, x.published, x.updated, x.attributedto, x.attachment, x.preview, x.actor, x.tripcode, x.sensitive from (
+		select id, name, alias, content, type, published, updated, attributedto, attachment, preview, actor, tripcode, sensitive from activitystream where actor=$1 and id in (select id from replies where inreplyto='') and type=$2
+		union
+		select id, name, alias, content, type, published, updated, attributedto, attachment, preview, actor, tripcode, sensitive from activitystream where actor in (select following from following where id=$1) and id in (select id from replies where inreplyto='') and type=$2
+		union
+		select id, name, alias, content, type, published, updated, attributedto, attachment, preview, actor, tripcode, sensitive from cacheactivitystream where actor in (select following from following where id=$1) and id in (select id from replies where inreplyto='') and type=$2
+	) as x order by x.updated desc limit $3`
 	rows, err := config.DB.Query(query, actor.Id, nType, limit)
 
 	if err != nil {
@@ -1118,7 +1142,7 @@ func (actor Actor) WantToServePage(page int) (Collection, error) {
 	var collection Collection
 	var err error
 
-	if page > config.PostCountPerPage && actor.Name != "overboard" {
+	if page > config.PostCountPerPage && actor.PreferredUsername != "overboard" {
 		return collection, errors.New("above page limit")
 	}
 
@@ -1333,7 +1357,7 @@ func (actor Actor) GetRecentThreads() (Collection, error) {
 	// Will exclude "hidden" boards when main actor used (only display local boards followed by main actor, and remote boards where the local actor is followed by the main actor)
 	query := `select x.id, x.name, x.content, x.type, x.published, x.updated, x.attributedto, x.attachment, x.preview, x.actor, x.tripcode, x.sensitive from (
 		select a.id, a.name, a.content, a.type, a.published, a.updated, a.attributedto, a.attachment, a.preview,
-			actor.preferedusername as actor, a.tripcode, a.sensitive
+			actor.name as actor, a.tripcode, a.sensitive
 		from activitystream a
 		join actor on actor.id = a.actor
 		where a.actor in (select following from following where id=$1)

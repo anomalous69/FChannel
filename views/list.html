@@ -91,9 +91,9 @@
   <li>[<a href="#bottom" id="top">Bottom</a>]</li>
   {{ if gt (len .page.Posts) 0 }}
   {{ if eq (index .page.Posts 0).Type "Note" }}
-  <li style="float: right;">[<a href="{{ $board.Name }}/feed.json?limit=100">JSON</a>]&nbsp;</li> 
-  <li style="float: right;">[<a href="{{ $board.Name }}/feed.atom?limit=100">Atom</a>]&nbsp;</li> 
-  <li style="float: right;">[<a href="{{ $board.Name }}/feed.rss?limit=100">RSS</a>]</li>
+  <li style="float: right;">[<a href="{{ $board.PrefName }}/feed.json?limit=100">JSON</a>]&nbsp;</li> 
+  <li style="float: right;">[<a href="{{ $board.PrefName }}/feed.atom?limit=100">Atom</a>]&nbsp;</li> 
+  <li style="float: right;">[<a href="{{ $board.PrefName }}/feed.rss?limit=100">RSS</a>]</li>
   {{ end }}
   {{ end }}
 </ul>
@@ -136,7 +136,7 @@
 		{{ if ne $board.BoardType "text" }}<td>{{ if (gt (len .Attachment) 0) }}{{ convertSize (index .Attachment 0).Size  }}{{ end }}</td>{{ end }}
 		<td class="timestamp" data-utc="{{ .Published | timeToUnix }}">{{ .Published | timeToReadableLong }}</td>
 		<td>{{if .Replies}}{{.Replies.TotalItems}}{{else}}0{{end}}</td>
-    <td style="text-align: center;">[<a href="/{{ $board.Actor.Name }}/{{ shortURL $board.Actor.Outbox $e.Id }}">View</a>]</td>
+    <td style="text-align: center;">[<a href="/{{ $board.Actor.PreferredUsername }}/{{ shortURL $board.Actor.Outbox $e.Id }}">View</a>]</td>
   </tr>
   {{ else }}
   <tr class="box">
@@ -152,7 +152,7 @@
 		{{ if ne $board.BoardType "text" }}<td>{{ if (gt (len .Attachment) 0) }}{{ convertSize (index .Attachment 0).Size  }}{{ end }}</td> {{ end }}
 		<td class="timestamp" data-utc="{{ .Published | timeToUnix }}">{{ .Published | timeToReadableLong }}</td>
 		<td>{{if .Replies}}{{.Replies.TotalItems}}{{else}}0{{end}}</td>
-    <td style="text-align: center;">[<a href="/{{ $board.Actor.Name }}/{{ shortURL $board.Actor.Outbox $e.Id }}">View</a>]</td>
+    <td style="text-align: center;">[<a href="/{{ $board.Actor.PreferredUsername }}/{{ shortURL $board.Actor.Outbox $e.Id }}">View</a>]</td>
   </tr>
   {{ end }}
   {{ end }}
@@ -163,9 +163,9 @@
 <ul id="navlinks">
   {{ template "partials/post_nav" .page }}
   <li>[<a href="#top" id="bottom">Top</a>]</li>
-  <li style="float: right;">[<a href="{{ $board.Name }}/feed.json?limit=100">JSON</a>]&nbsp;</li> 
-  <li style="float: right;">[<a href="{{ $board.Name }}/feed.atom?limit=100">Atom</a>]&nbsp;</li> 
-  <li style="float: right;">[<a href="{{ $board.Name }}/feed.rss?limit=100">RSS</a>]</li>
+  <li style="float: right;">[<a href="{{ $board.PrefName }}/feed.json?limit=100">JSON</a>]&nbsp;</li> 
+  <li style="float: right;">[<a href="{{ $board.PrefName }}/feed.atom?limit=100">Atom</a>]&nbsp;</li> 
+  <li style="float: right;">[<a href="{{ $board.PrefName }}/feed.rss?limit=100">RSS</a>]</li>
 </ul>
 <hr>
 

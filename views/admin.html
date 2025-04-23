@@ -2,9 +2,9 @@
   <h3>Add Board</h3>
   <form id="new-post" action="/{{ .page.Key }}/addboard" method="post" enctype="application/x-www-form-urlencoded">
     <label>Name:</label><br>
-    <input type="text" name="name" placeholder="g" required><br>
-    <label>Preferred Name:</label><br>
-    <input type="text" name="prefname" placeholder="Technology" required><input type="submit" value="Add"><br>
+    <input type="text" name="prefname" placeholder="g" required><br>
+    <label>Title:</label><br>
+    <input type="text" name="name" placeholder="Technology" required><input type="submit" value="Add"><br>
     <label>Summary:</label><br>
     <textarea name="summary" rows="8" cols="50"></textarea><br> 
     <label>Board type:</label><br>
@@ -56,11 +56,11 @@
   <ul style="display: inline-block; padding: 0; margin: 0; list-style-type: none;">
     {{ $domain := .page.Domain }}
     {{ range .reports }}
-    <h4 style="margin: 0;"><a href="{{ print $domain "/" (index . 0).Actor.Name }}">/{{ (index . 0).Actor.Name }}/</a></h4>
+    <h4 style="margin: 0;"><a href="{{ print $domain "/" (index . 0).Actor.PreferredUsername }}">/{{ (index . 0).Actor.PreferredUsername }}/</a></h4>
     {{ range . }}
     <li style="padding: 12px;">
       <div style="margin-bottom: 5px;">{{ .Object.Updated | timeToReadableLong }}</div>
-      <a id="rpost" post="{{ .ID }}" title="{{ parseLinkTitle .Actor.Outbox .OP .Object.Content}}" href="/{{ parseLink .Actor .ID }}">{{ shortURL .Actor.Outbox .ID }}</a> - <b>{{ .Count }}</b> [<a href="/delete?id={{ .ID }}&board={{ .Actor.Name }}&manage=t">Remove Post</a>] {{ if gt (len .Object.Attachment) 0 }} [<a href="/banmedia?id={{ .ID }}&board={{ .Actor.Name }}">Ban Media</a>] [<a href="/deleteattach?id={{ .ID }}&board={{ .Actor.Name }}&manage=t">Remove Attachment</a>]{{ end }} [<a href="/report?id={{ .ID }}&close=1&board={{ .Actor.Name }}">Close</a>]
+      <a id="rpost" post="{{ .ID }}" title="{{ parseLinkTitle .Actor.Outbox .OP .Object.Content}}" href="/{{ parseLink .Actor .ID }}">{{ shortURL .Actor.Outbox .ID }}</a> - <b>{{ .Count }}</b> [<a href="/delete?id={{ .ID }}&board={{ .Actor.PreferredUsername }}&manage=t">Remove Post</a>] {{ if gt (len .Object.Attachment) 0 }} [<a href="/banmedia?id={{ .ID }}&board={{ .Actor.PreferredUsername }}">Ban Media</a>] [<a href="/deleteattach?id={{ .ID }}&board={{ .Actor.PreferredUsername }}&manage=t">Remove Attachment</a>]{{ end }} [<a href="/report?id={{ .ID }}&close=1&board={{ .Actor.PreferredUsername }}">Close</a>]
       <ul>
         {{ range .Reason }}
         <li>

@@ -4,11 +4,11 @@
 {{ end }}
 
 <div style="max-width: 800px; margin: 0 auto;">
-  <h1 style="text-align: center;">/{{ .Board.Name }}/ - {{ .Board.PrefName }}</h1>
+  <h1 style="text-align: center;">/{{ .Board.PrefName }}/ - {{ .Board.Name }}</h1>
   <p style="text-align: center;">{{ .Board.Summary }}</p>
   {{ $len := len .Posts }}
   {{ if eq $len 0 }}
-  {{ if and (eq .PostType "new") (ne .Board.Name "main") (ne .Board.Name "overboard") }}
+  {{ if and (eq .PostType "new") (ne .Board.PrefName "main") (ne .Board.PrefName "overboard") }}
   <h3 id="newpostbtn"  state="0" style="display: none; margin-bottom:100px;">[<a href="javascript:startNewPost()">Start a New Thread</a>]</h3>
   {{ end }} <!-- end if inreplyto-->
   <div id="newpost">
@@ -73,7 +73,7 @@
 
       <input type="hidden" id="inReplyTo" name="inReplyTo" value="{{ .Board.InReplyTo }}">
       <input type="hidden" id="sendTo" name="sendTo" value="{{ .Board.To }}">
-      <input type="hidden" id="boardName" name="boardName" value="{{ .Board.Name }}">
+      <input type="hidden" id="boardName" name="boardName" value="{{ .Board.PrefName }}">
       <input type="hidden" id="returnTo" name="returnTo" value="{{ .ReturnTo }}">
     </form>
   </div>
@@ -86,7 +86,7 @@
   <h3 id="newpostbtn"  state="0" style="text-align: center; margin-top: 80px; display: none; margin-bottom:100px;">[<a href="javascript:startNewPost()">Post a Reply</a>]</h3>
   {{ end }}
   {{ else }}
-	{{ if and (ne .Board.Name "main") (ne .Board.Name "overboard")  }}
+	{{ if and (ne .Board.PrefName "main") (ne .Board.PrefName "overboard")  }}
   <h3 id="newpostbtn"  state="0" style="text-align: center; margin-top: 80px; display: none; margin-bottom:100px;">[<a href="javascript:startNewPost()">Start a New Thread</a>]</h3>
 	{{ end }}
   {{ end }} <!-- end if inreplyto-->
@@ -152,7 +152,7 @@
 
       <input type="hidden" id="inReplyTo" name="inReplyTo" value="{{ .Board.InReplyTo }}">
       <input type="hidden" id="sendTo" name="sendTo" value="{{ .Board.To }}">
-      <input type="hidden" id="boardName" name="boardName" value="{{ .Board.Name }}">
+      <input type="hidden" id="boardName" name="boardName" value="{{ .Board.PrefName }}">
       <input type="hidden" id="returnTo" name="returnTo" value="{{ .ReturnTo }}">    </form>
   </div>
   {{ else }}

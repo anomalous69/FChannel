@@ -7,22 +7,22 @@ import (
 )
 
 type PageData struct {
-	Title             string
-	PreferredUsername string
-	Board             activitypub.Board
-	Pages             []int
-	CurrentPage       int
-	TotalPage         int
-	Boards            []activitypub.Board
-	Posts             []activitypub.ObjectBase
-	Key               string
-	PostId            string
-	Instance          activitypub.Actor
-	ReturnTo          string
-	NewsItems         []db.NewsItem
-	BoardRemainer     []int
-	Meta              Meta
-	PostType          string
+	Title         string
+	Name          string
+	Board         activitypub.Board
+	Pages         []int
+	CurrentPage   int
+	TotalPage     int
+	Boards        []activitypub.Board
+	Posts         []activitypub.ObjectBase
+	Key           string
+	PostId        string
+	Instance      activitypub.Actor
+	ReturnTo      string
+	NewsItems     []db.NewsItem
+	BoardRemainer []int
+	Meta          Meta
+	PostType      string
 
 	Themes      *[]string
 	ThemeCookie string

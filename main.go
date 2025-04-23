@@ -163,7 +163,10 @@ func Init() {
 		config.Log.Println(err)
 	}
 
-	if err = db.RunDatabaseSchema(); err != nil {
+	if err = db.EnsureMigrationState(); err != nil {
+		config.Log.Println(err)
+	}
+	if err = db.RunMigrations(); err != nil {
 		config.Log.Println(err)
 	}
 

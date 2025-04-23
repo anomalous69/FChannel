@@ -82,7 +82,7 @@ func AdminIndex(ctx *fiber.Ctx) error {
 		reports, _ := db.GetLocalReport(boards[1])
 
 		for _, k := range reports {
-			reported[k.Actor.Name] = append(reported[k.Actor.Name], k)
+			reported[k.Actor.PreferredUsername] = append(reported[k.Actor.PreferredUsername], k)
 		}
 	}
 
@@ -95,7 +95,7 @@ func AdminIndex(ctx *fiber.Ctx) error {
 	adminData.Key = config.Key
 	adminData.Domain = config.Domain
 	adminData.Board.ModCred, _ = util.GetPasswordFromSession(ctx)
-	adminData.Title = actor.Name + " Admin page"
+	adminData.Title = actor.PreferredUsername + " Admin page"
 
 	adminData.Boards = activitypub.Boards
 
@@ -143,8 +143,8 @@ func AdminFollow(ctx *fiber.Ctx) error {
 	var redirect string
 	actor, _ = activitypub.GetActorFromPath(ctx.Path(), "/"+config.Key+"/")
 
-	if actor.Name != "main" {
-		redirect = actor.Name
+	if actor.PreferredUsername != "main" {
+		redirect = actor.PreferredUsername
 	}
 
 	time.Sleep(time.Duration(500) * time.Millisecond)
@@ -235,11 +235,11 @@ func AdminActorIndex(ctx *fiber.Ctx) error {
 	data.Following = following
 	data.Followers = followers
 
-	reports, _ := db.GetLocalReport(actor.Name)
+	reports, _ := db.GetLocalReport(actor.PreferredUsername)
 
 	var reported = make(map[string][]db.Reports)
 	for _, k := range reports {
-		reported[k.Actor.Name] = append(reported[k.Actor.Name], k)
+		reported[k.Actor.PreferredUsername] = append(reported[k.Actor.PreferredUsername], k)
 	}
 
 	for k, e := range reported {
@@ -249,9 +249,9 @@ func AdminActorIndex(ctx *fiber.Ctx) error {
 
 	data.Domain = config.Domain
 	data.IsLocal, _ = actor.IsLocal()
-	data.Title = "Manage /" + actor.Name + "/"
+	data.Title = "Manage /" + actor.PreferredUsername + "/"
 	data.Boards = activitypub.Boards
-	data.Board.Name = actor.Name
+	data.Board.PrefName = actor.PreferredUsername
 	data.Board.Actor = actor
 	data.Key = config.Key
 	data.Board.TP = config.TP
@@ -310,14 +310,14 @@ func AdminAddJanny(ctx *fiber.Ctx) error {
 	verify.Label = ctx.FormValue("label")
 
 	if err := actor.CreateVerification(verify); err != nil {
-		return util.MakeError(err, "CreateNewBoardDB")
+		return util.MakeError(err, "AdminAddJanny")
 	}
 
 	var redirect string
 	actor, _ = activitypub.GetActorFromPath(ctx.Path(), "/"+config.Key+"/")
 
-	if actor.Name != "main" {
-		redirect = actor.Name
+	if actor.PreferredUsername != "main" {
+		redirect = actor.PreferredUsername
 	}
 
 	return ctx.Redirect("/"+config.Key+"/"+redirect, http.StatusSeeOther)
@@ -345,8 +345,8 @@ func AdminEditSummary(ctx *fiber.Ctx) error {
 	}
 
 	var redirect string
-	if actor.Name != "main" {
-		redirect = actor.Name
+	if actor.PreferredUsername != "main" {
+		redirect = actor.PreferredUsername
 	}
 
 	return ctx.Redirect("/"+config.Key+"/"+redirect, http.StatusSeeOther)
@@ -377,8 +377,8 @@ func AdminSetBoardType(ctx *fiber.Ctx) error {
 		}
 
 		var redirect string
-		if actor.Name != "main" {
-			redirect = actor.Name
+		if actor.PreferredUsername != "main" {
+			redirect = actor.PreferredUsername
 		}
 
 		return ctx.Redirect("/"+config.Key+"/"+redirect, http.StatusSeeOther)
@@ -409,8 +409,8 @@ func AdminDeleteJanny(ctx *fiber.Ctx) error {
 
 	var redirect string
 
-	if actor.Name != "main" {
-		redirect = actor.Name
+	if actor.PreferredUsername != "main" {
+		redirect = actor.PreferredUsername
 	}
 
 	return ctx.Redirect("/"+config.Key+"/"+redirect, http.StatusSeeOther)

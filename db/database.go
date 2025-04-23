@@ -13,6 +13,10 @@ import (
 	"github.com/anomalous69/fchannel/config"
 	"github.com/anomalous69/fchannel/util"
 	_ "github.com/jackc/pgx/v5/stdlib"
+
+	"github.com/golang-migrate/migrate/v4"
+	"github.com/golang-migrate/migrate/v4/database/postgres"
+	_ "github.com/golang-migrate/migrate/v4/source/file"
 )
 
 type NewsItem struct {
@@ -61,14 +65,29 @@ func Close() error {
 	return util.MakeError(err, "Close")
 }
 
-func RunDatabaseSchema() error {
-	query, err := os.ReadFile("db/schema.psql")
-	if err != nil {
-		return util.MakeError(err, "RunDatabaseSchema")
+func RunMigrations() error {
+	if config.DB == nil {
+		return fmt.Errorf("DB connection is nil")
 	}
 
-	_, err = config.DB.Exec(string(query))
-	return util.MakeError(err, "RunDatabaseSchema")
+	driver, err := postgres.WithInstance(config.DB, &postgres.Config{})
+	if err != nil {
+		return fmt.Errorf("migrate driver: %w", err)
+	}
+
+	m, err := migrate.NewWithDatabaseInstance(
+		"file://db/migrations",
+		"postgres", driver,
+	)
+	if err != nil {
+		return fmt.Errorf("migrate instance: %w", err)
+	}
+
+	err = m.Up()
+	if err != nil && err != migrate.ErrNoChange {
+		return fmt.Errorf("migrate up: %w", err)
+	}
+	return nil
 }
 
 func CreateNewBoard(actor activitypub.Actor) (activitypub.Actor, error) {
@@ -78,7 +97,7 @@ func CreateNewBoard(actor activitypub.Actor) (activitypub.Actor, error) {
 		if actor.BoardType != "text" && actor.BoardType != "flash" {
 			actor.BoardType = "image"
 		}
-		query := `insert into actor (type, id, name, preferedusername, inbox, outbox, following, followers, summary, restricted, boardtype) values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)`
+		query := `insert into actor (type, id, name, preferredusername, inbox, outbox, following, followers, summary, restricted, boardtype) values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)`
 		_, err := config.DB.Exec(query, actor.Type, actor.Id, actor.Name, actor.PreferredUsername, actor.Inbox, actor.Outbox, actor.Following, actor.Followers, actor.Summary, actor.Restricted, actor.BoardType)
 
 		if err != nil {
@@ -89,7 +108,7 @@ func CreateNewBoard(actor activitypub.Actor) (activitypub.Actor, error) {
 
 		for _, e := range actor.AuthRequirement {
 			query = `insert into actorauth (type, board) values ($1, $2)`
-			if _, err := config.DB.Exec(query, e, actor.Name); err != nil {
+			if _, err := config.DB.Exec(query, e, actor.PreferredUsername); err != nil {
 				return activitypub.Actor{}, util.MakeError(err, "CreateNewBoardDB")
 			}
 		}
@@ -106,7 +125,7 @@ func CreateNewBoard(actor activitypub.Actor) (activitypub.Actor, error) {
 
 		activitypub.CreatePem(actor)
 
-		if actor.Name != "main" {
+		if actor.PreferredUsername != "main" {
 			var nObject activitypub.ObjectBase
 			var nActivity activitypub.Activity
 
@@ -504,4 +523,31 @@ func IsTombstone(id string) bool {
 	config.DB.QueryRow(query, id).Scan(&result)
 
 	return result
+}
+
+func EnsureMigrationState() error {
+	// Check if schema_migrations table exists
+	var exists bool
+	row := config.DB.QueryRow(`SELECT EXISTS (
+		SELECT FROM information_schema.tables 
+		WHERE table_name = 'schema_migrations')`)
+	if err := row.Scan(&exists); err != nil {
+		return err
+	}
+	if exists {
+		return nil // migrations already tracked
+	}
+	// Check if any known table from initial schema exists
+	row = config.DB.QueryRow(`SELECT EXISTS (
+		SELECT FROM information_schema.tables 
+		WHERE table_name = 'actor')`)
+	if err := row.Scan(&exists); err != nil {
+		return err
+	}
+	if exists {
+		// Mark initial migration as applied
+		_, err := config.DB.Exec(`INSERT INTO schema_migrations (version, dirty) VALUES (1, false) ON CONFLICT DO NOTHING`)
+		return err
+	}
+	return nil
 }

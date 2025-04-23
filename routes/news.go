@@ -30,7 +30,7 @@ func NewsGet(ctx *fiber.Ctx) error {
 	}
 
 	var data PageData
-	data.PreferredUsername = actor.PreferredUsername
+	data.Name = actor.Name
 	data.Boards = activitypub.Boards
 	data.Board.Name = ""
 	data.Key = config.Key
@@ -46,9 +46,9 @@ func NewsGet(ctx *fiber.Ctx) error {
 		return Send404(ctx, "News not found")
 	}
 
-	data.Title = actor.PreferredUsername + ": " + data.NewsItems[0].Title
+	data.Title = actor.Name + ": " + data.NewsItems[0].Title
 
-	data.Meta.Description = data.PreferredUsername + " is a federated image board based on ActivityPub. The current version of the code running on the server is still a work-in-progress product, expect a bumpy ride for the time being. Get the server code here: https://github.com/anomalous69/FChannel."
+	data.Meta.Description = data.Name + " is a federated image board based on ActivityPub. The current version of the code running on the server is still a work-in-progress product, expect a bumpy ride for the time being. Get the server code here: https://github.com/anomalous69/FChannel."
 	data.Meta.Url = data.Board.Actor.Id
 	data.Meta.Title = data.Title
 
@@ -67,8 +67,8 @@ func NewsGetAll(ctx *fiber.Ctx) error {
 	}
 
 	var data PageData
-	data.PreferredUsername = actor.PreferredUsername
-	data.Title = actor.PreferredUsername + " News"
+	data.Name = actor.Name
+	data.Title = actor.Name + " News"
 	data.Boards = activitypub.Boards
 	data.Board.Name = ""
 	data.Key = config.Key
@@ -88,7 +88,7 @@ func NewsGetAll(ctx *fiber.Ctx) error {
 		return ctx.Redirect("/", http.StatusSeeOther)
 	}
 
-	data.Meta.Description = data.PreferredUsername + " is a federated image board based on ActivityPub. The current version of the code running on the server is still a work-in-progress product, expect a bumpy ride for the time being. Get the server code here: https://github.com/anomalous69/FChannel."
+	data.Meta.Description = data.Name + " is a federated image board based on ActivityPub. The current version of the code running on the server is still a work-in-progress product, expect a bumpy ride for the time being. Get the server code here: https://github.com/anomalous69/FChannel."
 	data.Meta.Url = data.Board.Actor.Id
 	data.Meta.Title = data.Title
 
@@ -156,7 +156,7 @@ func GetNewsFeed(ctx *fiber.Ctx) error {
 	}
 	now := time.Now()
 	feed := &feeds.Feed{
-		Title:   actor.PreferredUsername + " News",
+		Title:   actor.Name + " News",
 		Link:    &feeds.Link{Href: config.Domain + "/news"},
 		Created: now,
 	}

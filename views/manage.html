@@ -1,11 +1,11 @@
 <div style="text-align: center; margin: 0 auto; width: 400px;">
-  <h1>Manage /{{ .page.Board.Name }}/</h1>
-  <form id="summary-form" action="/{{ .page.Key }}/{{ .page.Board.Name }}/editsummary" method="post" enctype="application/x-www-form-urlencoded" style="margin-top: 5px;">
+  <h1>Manage /{{ .page.Board.PrefName }}/</h1>
+  <form id="summary-form" action="/{{ .page.Key }}/{{ .page.Board.PrefName }}/editsummary" method="post" enctype="application/x-www-form-urlencoded" style="margin-top: 5px;">
     <input id="summary" name="summary" style="margin-bottom: 5px;" size="35" placeholder="{{ .page.Board.Actor.Summary }}"></input>
     <input type="submit" value="Update Summary"><br>
     <input type="hidden" name="actor" value="{{ .page.Board.Actor.Id }}">
   </form>
-  <!-- <div><a href="/{{ .Key }}/deleteboard?name={{ .Board.Name }}">[Delete Board]</a></div> -->
+  <!-- <div><a href="/{{ .Key }}/deleteboard?name={{ .Board.PrefName }}">[Delete Board]</a></div> -->
   <ul style="display: inline-block; padding: 0;">
     {{ if .page.IsLocal }}
     <li style="display: inline-block;">[<a href="#following"> Subscribed </a>]</li>
@@ -17,15 +17,15 @@
     {{ end }}
   </ul>
 </div>
-[<a href="/{{ .page.Board.Name }}">Return</a>]
+[<a href="/{{ .page.Board.PrefName }}">Return</a>]
 {{ $actor := .page.Board.Actor.Id }}
 {{ $board := .page.Board }}
 {{ $key := .page.Key }}
 {{ if .page.IsLocal }}
 <div id="following" class="box2" style="margin-bottom: 25px; margin-top: 5px; padding: 12px;">
   <h4 style="margin: 0; margin-bottom: 5px;">Following</h4>
-  [{{ if .page.AutoSubscribe }}<a title="Auto Follow is On" href="/autosubscribe?board={{ .page.Board.Name }}">Toggle Auto Follow Off{{ else }}<a title="Auto Follow is Off" href="/autosubscribe?board={{ .page.Board.Name }}">Toggle Auto Follow On{{ end }}</a>]
-  <form id="follow-form" action="/{{ .page.Key }}/{{ .page.Board.Name }}/follow" method="post" enctype="application/x-www-form-urlencoded" style="margin-top: 5px;">
+  [{{ if .page.AutoSubscribe }}<a title="Auto Follow is On" href="/autosubscribe?board={{ .page.Board.PrefName }}">Toggle Auto Follow Off{{ else }}<a title="Auto Follow is Off" href="/autosubscribe?board={{ .page.Board.PrefName }}">Toggle Auto Follow On{{ end }}</a>]
+  <form id="follow-form" action="/{{ .page.Key }}/{{ .page.Board.PrefName }}/follow" method="post" enctype="application/x-www-form-urlencoded" style="margin-top: 5px;">
     <input id="follow" name="follow" style="margin-bottom: 5px;" size="35" placeholder="https://fchan.xyz/g"></input>
     <input type="submit" value="Follow"><br>
     <input type="hidden" name="actor" value="{{ $board.Actor.Id }}">
@@ -56,7 +56,7 @@
     {{ range . }}
     <li style="padding: 12px;">
       <div style="margin-bottom: 5px;">{{ .Object.Updated | timeToReadableLong }}</div>
-      <a id="rpost" post="{{ .ID }}" title="{{ parseLinkTitle .Actor.Outbox .OP .Object.Content}}" href="/{{ parseLink .Actor .ID }}">{{ shortURL .Actor.Outbox .ID }}</a> - <b>{{ .Count }}</b> [<a href="/delete?id={{ .ID }}&board={{ .Actor.Name }}&manage=t">Remove Post</a>] {{ if gt (len .Object.Attachment) 0 }} [<a href="/banmedia?id={{ .ID }}&board={{ .Actor.Name }}">Ban Media</a>] [<a href="/deleteattach?id={{ .ID }}&board={{ .Actor.Name }}&manage=t">Remove Attachment</a>]{{ end }} [<a href="/report?id={{ .ID }}&close=1&board={{ .Actor.Name }}">Close</a>]
+      <a id="rpost" post="{{ .ID }}" title="{{ parseLinkTitle .Actor.Outbox .OP .Object.Content}}" href="/{{ parseLink .Actor .ID }}">{{ shortURL .Actor.Outbox .ID }}</a> - <b>{{ .Count }}</b> [<a href="/delete?id={{ .ID }}&board={{ .Actor.PreferredUsername }}&manage=t">Remove Post</a>] {{ if gt (len .Object.Attachment) 0 }} [<a href="/banmedia?id={{ .ID }}&board={{ .Actor.PreferredUsername }}">Ban Media</a>] [<a href="/deleteattach?id={{ .ID }}&board={{ .Actor.PreferredUsername }}&manage=t">Remove Attachment</a>]{{ end }} [<a href="/report?id={{ .ID }}&close=1&board={{ .Actor.PreferredUsername }}">Close</a>]
       <ul>
         {{ range .Reason }}
         <li>
@@ -73,7 +73,7 @@
 {{ if eq .page.Board.ModCred "admin" }}
 <div id="jannies" class="box2" style="margin-bottom: 25px; padding: 12px;">
   <h4 style="margin: 0; margin-bottom: 5px;">Janitor Managment</h4>
-  <form id="janny-form" action="/{{ .page.Key }}/{{ .page.Board.Name }}/addjanny" method="post" enctype="application/x-www-form-urlencoded" style="margin-top: 5px;">
+  <form id="janny-form" action="/{{ .page.Key }}/{{ .page.Board.PrefName }}/addjanny" method="post" enctype="application/x-www-form-urlencoded" style="margin-top: 5px;">
     <input id="label" name="label" style="margin-bottom: 5px;" size="35" placeholder="Label i.e Janny Alias"></input>
     <input type="submit" value="Add Janitor"><br>
     <input type="hidden" name="actor" value="{{ $board.Actor.Id }}">
@@ -89,7 +89,7 @@
 {{ if eq .page.Board.ModCred "admin" }}
 <div id="boardsettings" class="box2" style="margin-bottom: 25px; padding: 12px;">
   <h4 style="margin: 0; margin-bottom: 5px;">Board Settings</h4>
-  <form id="boardsettings-form" action="/{{ .page.Key }}/{{ .page.Board.Name }}/setboardtype" method="post" enctype="application/x-www-form-urlencoded" style="margin-top: 5px;">
+  <form id="boardsettings-form" action="/{{ .page.Key }}/{{ .page.Board.PrefName }}/setboardtype" method="post" enctype="application/x-www-form-urlencoded" style="margin-top: 5px;">
     <label for="boardtypes">Board type:</label>
     <select id="boardtypes" name="boardtype">
       <option value="image"{{if eq "image" .page.BoardType}} selected{{end}}>Image</option>

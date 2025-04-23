@@ -34,7 +34,7 @@ func CreatePem(actor Actor) error {
 		Bytes: privateKeyBytes,
 	}
 
-	privatePem, err := os.Create("./pem/board/" + actor.Name + "-private.pem")
+	privatePem, err := os.Create("./pem/board/" + actor.PreferredUsername + "-private.pem")
 	if err != nil {
 		return util.MakeError(err, "CreatePem")
 	}
@@ -54,7 +54,7 @@ func CreatePem(actor Actor) error {
 		Bytes: publicKeyBytes,
 	}
 
-	publicPem, err := os.Create("./pem/board/" + actor.Name + "-public.pem")
+	publicPem, err := os.Create("./pem/board/" + actor.PreferredUsername + "-public.pem")
 	if err != nil {
 		return util.MakeError(err, "CreatePem")
 	}
@@ -63,11 +63,11 @@ func CreatePem(actor Actor) error {
 		return util.MakeError(err, "CreatePem")
 	}
 
-	_, err = os.Stat("./pem/board/" + actor.Name + "-public.pem")
+	_, err = os.Stat("./pem/board/" + actor.PreferredUsername + "-public.pem")
 	if os.IsNotExist(err) {
 		return util.MakeError(err, "CreatePem")
 	} else {
-		config.Log.Println(`Created PEM keypair for the "` + actor.Name + `" board. Please keep in mind that
+		config.Log.Println(`Created PEM keypair for the "` + actor.PreferredUsername + `" board. Please keep in mind that
 	the PEM key is crucial in identifying yourself as the legitimate owner of the board,
 	so DO NOT LOSE IT!!! If you lose it, YOU WILL LOSE ACCESS TO YOUR BOARD!`)
 		return StorePemToDB(actor)
@@ -121,7 +121,7 @@ func CreatePublicKeyFromPrivate(actor *Actor, publicKeyPem string) error {
 	} else {
 		config.Log.Println(`\nUnable to locate private key from public key generation. Now,
 this means that you are now missing the proof that you are the
-owner of the "` + actor.Name + `" board. If you are the developer,
+owner of the "` + actor.PreferredUsername + `" board. If you are the developer,
 then your job is just as easy as generating a new keypair, but
 if this board is live, then you'll also have to convince the other
 owners to switch their public keys for you so that they will start
@@ -191,7 +191,7 @@ func StorePemToDB(actor Actor) error {
 		return util.MakeError(err, "StorePemToDB")
 	}
 
-	file := "./pem/board/" + actor.Name + "-public.pem"
+	file := "./pem/board/" + actor.PreferredUsername + "-public.pem"
 	query = "insert into publicKeyPem (id, owner, file) values($1, $2, $3)"
 	_, err = config.DB.Exec(query, publicKeyPem, actor.Id, file)
 	return util.MakeError(err, "StorePemToDB")

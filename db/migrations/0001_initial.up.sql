@@ -2,7 +2,7 @@ CREATE TABLE IF NOT EXISTS actor(
 type varchar(50) default '',
 id varchar(100) UNIQUE PRIMARY KEY,
 name varchar(50) default '',
-preferedusername varchar(100) default '',
+preferredusername varchar(100) default '',
 summary varchar(200) default '',
 inbox varchar(100) default '',
 outbox varchar(100) default '',

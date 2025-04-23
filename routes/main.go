@@ -33,8 +33,8 @@ func Index(ctx *fiber.Ctx) error {
 		return util.MakeError(err, "Index")
 	}
 
-	data.Title = "Welcome to " + actor.PreferredUsername
-	data.PreferredUsername = actor.PreferredUsername
+	data.Title = "Welcome to " + actor.Name
+	data.Name = actor.Name
 	data.Boards = activitypub.Boards
 	data.Posts = collection.OrderedItems
 	data.Board.Name = ""
@@ -52,7 +52,7 @@ func Index(ctx *fiber.Ctx) error {
 		data.BoardRemainer = make([]int, 0)
 	}
 
-	data.Meta.Description = data.PreferredUsername + " a federated image board based on ActivityPub. The current version of the code running on the server is still a work-in-progress product, expect a bumpy ride for the time being. Get the server code here: https://github.com/anomalous69/FChannel."
+	data.Meta.Description = data.Name + " a federated image board based on ActivityPub. The current version of the code running on the server is still a work-in-progress product, expect a bumpy ride for the time being. Get the server code here: https://github.com/anomalous69/FChannel."
 	data.Meta.Url = data.Board.Domain
 	data.Meta.Title = data.Title
 

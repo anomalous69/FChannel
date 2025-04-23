@@ -8,9 +8,9 @@
 <ul id="navlinks">
   {{ template "partials/post_nav" .page }}
   <li>[<a href="#bottom" id="top">Bottom</a>]</li>
-  <li style="float: right;">[<a href="{{ $board.Name }}/feed.json?limit=100">JSON</a>]</li> 
-  <li style="float: right;">[<a href="{{ $board.Name }}/feed.atom?limit=100">Atom</a>]&nbsp;</li> 
-  <li style="float: right;">[<a href="{{ $board.Name }}/feed.rss?limit=100">RSS</a>]&nbsp;</li>
+  <li style="float: right;">[<a href="{{ $board.PrefName }}/feed.json?limit=100">JSON</a>]</li> 
+  <li style="float: right;">[<a href="{{ $board.PrefName }}/feed.atom?limit=100">Atom</a>]&nbsp;</li> 
+  <li style="float: right;">[<a href="{{ $board.PrefName }}/feed.rss?limit=100">RSS</a>]&nbsp;</li>
 </ul>
 
 <form name="delform" id="delform" action="/multidelete" method="post">
@@ -25,9 +25,9 @@
 <ul id="navlinks">
   {{ template "partials/post_nav" .page }}
   <li>[<a href="#top" id="bottom">Top</a>]</li>
-  <li style="float: right;">[<a href="{{ $board.Name }}/feed.json?limit=100">JSON</a>]&nbsp;</li> 
-  <li style="float: right;">[<a href="{{ $board.Name }}/feed.atom?limit=100">Atom</a>]&nbsp;</li> 
-  <li style="float: right;">[<a href="{{ $board.Name }}/feed.rss?limit=100">RSS</a>]</li>
+  <li style="float: right;">[<a href="{{ $board.PrefName }}/feed.json?limit=100">JSON</a>]&nbsp;</li> 
+  <li style="float: right;">[<a href="{{ $board.PrefName }}/feed.atom?limit=100">Atom</a>]&nbsp;</li> 
+  <li style="float: right;">[<a href="{{ $board.PrefName }}/feed.rss?limit=100">RSS</a>]</li>
 </ul>
 
 <hr>

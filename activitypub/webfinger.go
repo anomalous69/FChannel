@@ -222,7 +222,7 @@ func GetActorByNameFromBoardCollection(name string) Actor {
 	var actor Actor
 	boards, _ := GetBoardCollection()
 	for _, e := range boards {
-		if e.Actor.Name == name {
+		if e.Actor.PreferredUsername == name {
 			actor = e.Actor
 		}
 	}
@@ -244,7 +244,7 @@ func GetBoardCollection() ([]Board, error) {
 		}
 		board.Name = boardActor.Name
 		board.PrefName = boardActor.PreferredUsername
-		board.Location = "/" + boardActor.Name
+		board.Location = "/" + boardActor.PreferredUsername
 		board.Actor = boardActor
 		board.Restricted = boardActor.Restricted
 		collection = append(collection, board)

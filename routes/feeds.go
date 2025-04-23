@@ -39,7 +39,7 @@ func GetThreadFeed(ctx *fiber.Ctx) error {
 
 	now := time.Now()
 	feed := &feeds.Feed{
-		Title:   "/" + actor.Name + "/ - " + ctx.Params("post"), //TODO: Put thread subject here if it exists
+		Title:   "/" + actor.PreferredUsername + "/ - " + ctx.Params("post"), //TODO: Put thread subject here if it exists
 		Link:    &feeds.Link{Href: thread},
 		Created: now,
 	}
@@ -52,7 +52,7 @@ func GetThreadFeed(ctx *fiber.Ctx) error {
 			and type='Note') as x order by x.published desc limit $2`
 
 	if rows, err = config.DB.Query(query, thread, limit); err != nil {
-		return util.MakeError(err, "GetBoardFeed")
+		return util.MakeError(err, "GetThreadFeed")
 	}
 
 	defer rows.Close()
@@ -123,7 +123,7 @@ func GetThreadFeed(ctx *fiber.Ctx) error {
 	}
 
 	if err != nil {
-		return util.MakeError(err, "NewsFeed")
+		return util.MakeError(err, "GetThreadFeed")
 	}
 
 	//TODO: Handle these
@@ -155,7 +155,7 @@ func GetBoardFeed(ctx *fiber.Ctx) error {
 
 	now := time.Now()
 	feed := &feeds.Feed{
-		Title:   "/" + actor.Name + "/ - " + actor.PreferredUsername,
+		Title:   "/" + actor.PreferredUsername + "/ - " + actor.Name,
 		Link:    &feeds.Link{Href: actor.Id},
 		Created: now,
 	}
@@ -163,7 +163,7 @@ func GetBoardFeed(ctx *fiber.Ctx) error {
 	var rows *sql.Rows
 	var query string
 
-	if actor.Name == "overboard" {
+	if actor.PreferredUsername == "overboard" {
 		query = `select x.id, x.name, x.content, x.published, x.attributedto, x.attachment, x.preview, x.actor, x.tripcode, x.sensitive from (select id, name, content, published, 
 		attributedto, attachment, preview, actor, tripcode, sensitive from activitystream where actor in (select following from following where id in (select id from following where id=$1)) and type='Note' union select id, name, content, published, 
 		attributedto, attachment, preview, actor, tripcode, sensitive from cacheactivitystream where actor in (select following from following where id in (select id from follower where id=$1))
@@ -254,7 +254,7 @@ func GetBoardFeed(ctx *fiber.Ctx) error {
 	}
 
 	if err != nil {
-		return util.MakeError(err, "NewsFeed")
+		return util.MakeError(err, "GetBoardFeed")
 	}
 
 	//TODO: Handle these

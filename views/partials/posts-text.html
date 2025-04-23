@@ -15,14 +15,14 @@
     {{ .Alias | parseEmail }}<span class="name{{if eq .TripCode "#Admin"}} capcodeAdmin{{end}}{{if eq .TripCode "#Mod"}} capcodeMod{{end}}{{if eq .TripCode "#Janitor"}} capcodeJanitor{{end}}"><b>{{ if .AttributedTo }}{{.AttributedTo }}{{ else }}Anonymous{{ end }}</b></span>{{ if .Alias }}</a>{{ end }}
     <span class="tripcode{{if eq .TripCode "#Admin"}} capcodeAdmin{{end}}{{if eq .TripCode "#Mod"}} capcodeMod{{end}}{{if eq .TripCode "#Janitor"}} capcodeJanitor{{end}}"> {{ .TripCode }} </span>
     {{ .Alias | parseIDandFlag }}
-		<span class="timestamp" data-utc="{{.Published | timeToUnix}}">{{ .Published | timeToReadableLong }}</span> <a class="postid" id="{{ .Id }}-anchor" href="/{{ $board.Name }}/{{ shortURL $board.Actor.Outbox $opId }}#{{ shortURL $board.Actor.Outbox .Id }}">No.</a> <a class="postid" id="{{ .Id }}-link" title="{{ .Id }}"   {{ if eq .Locked false }} {{ if eq .Type "Note" }} onclick="quote('{{ $board.Actor.Id }}', '{{ $opId }}', '{{ .Id }}');return false" href="{{ .Id }}" {{ end }} {{ end }}>{{ shortURL $board.Actor.Outbox .Id }}</a> <span class="status">{{ if .Sticky }}<span class="sticky"><img src="/static/pin.png"></span>{{ end }} {{ if .Locked }} <span class="lock"><img src="/static/locked.png"></span>{{ end }}</span>{{ if ne .Type "Tombstone" }}{{ if not $board.InReplyTo }}&nbsp;<span>[<a href="/{{ $board.Name }}/{{ shortURL $board.Actor.Outbox $opId }}">{{ if .Locked }}Open{{ else }}Reply{{ end }}</a>]</span>{{end}}<div class="postMenu">
+		<span class="timestamp" data-utc="{{.Published | timeToUnix}}">{{ .Published | timeToReadableLong }}</span> <a class="postid" id="{{ .Id }}-anchor" href="/{{ $board.PrefName }}/{{shortURL $board.Actor.Outbox $opId }}#{{ shortURL $board.Actor.Outbox .Id }}">No.</a> <a class="postid" id="{{ .Id }}-link" title="{{ .Id }}"   {{ if eq .Locked false }} {{ if eq .Type "Note" }} onclick="quote('{{ $board.Actor.Id }}', '{{ $opId }}', '{{ .Id }}');return false" href="{{ .Id }}" {{ end }} {{ end }}>{{ shortURL $board.Actor.Outbox .Id }}</a> <span class="status">{{ if .Sticky }}<span class="sticky"><img src="/static/pin.png"></span>{{ end }} {{ if .Locked }} <span class="lock"><img src="/static/locked.png"></span>{{ end }}</span>{{ if ne .Type "Tombstone" }}{{ if not $board.InReplyTo }}&nbsp;<span>[<a href="/{{ $board.PrefName }}/{{shortURL $board.Actor.Outbox $opId }}">{{ if .Locked }}Open{{ else }}Reply{{ end }}</a>]</span>{{end}}<div class="postMenu">
       <input title="Post menu" type="checkbox">
       <div class="postMenu-text">▶</div>
       <div class="postMenu-container">
           {{ if eq $board.ModCred $board.Domain $board.Actor.Id }}
-          <a href="/sticky?id={{ .Id }}&board={{ $board.Actor.Name }}" onclick="return confirm('{{ if .Sticky }}Unsticky Thread?');">Unsticky{{else}}Sticky Thread?');">Sticky{{end}}</a>
-          <a href="/lock?id={{ .Id }}&board={{ $board.Actor.Name }}" onclick="return confirm('{{ if .Locked }}Unlock Thread?');">Unlock{{else}}Lock Thread?');">Lock{{end}}</a>
-          <a href="/delete?id={{ .Id }}&board={{ $board.Actor.Name }}" onclick="return confirm('Delete Post?');">Delete Post</a>
+          <a href="/sticky?id={{ .Id }}&board={{ $board.Actor.PreferredUsername }}" onclick="return confirm('{{ if .Sticky }}Unsticky Thread?');">Unsticky{{else}}Sticky Thread?');">Sticky{{end}}</a>
+          <a href="/lock?id={{ .Id }}&board={{ $board.Actor.PreferredUsername }}" onclick="return confirm('{{ if .Locked }}Unlock Thread?');">Unlock{{else}}Lock Thread?');">Lock{{end}}</a>
+          <a href="/delete?id={{ .Id }}&board={{ $board.Actor.PreferredUsername }}" onclick="return confirm('Delete Post?');">Delete Post</a>
           <a href="/ban?actor={{ $board.Actor.Id }}&post={{ .Id }}">Ban IP</a>
           {{ end }}
           <a href="/make-report?actor={{ $board.Actor.Id }}&post={{ .Id }}">Report post</a>
@@ -36,7 +36,7 @@
     {{ $replies := .Replies }}
     {{ if gt $replies.TotalItems 5 }}
     {{ if gt $len 1 }}
-    <span class="summary">{{ $replies.TotalItems }} replies{{ if gt $replies.TotalImgs 0}} and {{ $replies.TotalImgs }} images{{ end }}, Click <a id="view" post="{{.Id}}" href="/{{ $board.Name }}/{{ shortURL $board.Actor.Outbox .Id }}">here</a> to view all.</span>
+    <span class="summary">{{ $replies.TotalItems }} replies{{ if gt $replies.TotalImgs 0}} and {{ $replies.TotalImgs }} images{{ end }}, Click <a id="view" post="{{.Id}}" href="/{{ $board.PrefName }}/{{shortURL $board.Actor.Outbox .Id }}">here</a> to view all.</span>
     <br>
     <br>
     {{ end }}
@@ -53,12 +53,12 @@
           {{ .Alias | parseEmail }}<span class="name{{if eq .TripCode "#Admin"}} capcodeAdmin{{end}}{{if eq .TripCode "#Mod"}} capcodeMod{{end}}{{if eq .TripCode "#Janitor"}} capcodeJanitor{{end}}"><b>{{ if .AttributedTo }}{{.AttributedTo }}{{ else }}Anonymous{{ end }}</b></span>{{ if .Alias }}</a>{{ end }}
           <span class="tripcode{{if eq .TripCode "#Admin"}} capcodeAdmin{{end}}{{if eq .TripCode "#Mod"}} capcodeMod{{end}}{{if eq .TripCode "#Janitor"}} capcodeJanitor{{end}}"> {{ .TripCode }} </span>
           {{ .Alias | parseIDandFlag }}
-					<span class="timestamp" data-utc="{{ .Published | timeToUnix }}">{{ .Published | timeToReadableLong }}</span> <a class="postid" id="{{ .Id }}-anchor" href="/{{ $board.Name }}/{{ shortURL $board.Actor.Outbox $opId }}#{{ shortURL $board.Actor.Outbox .Id }}">No. </a><a class="postid" id="{{ .Id }}-link" title="{{ .Id }}" {{ if eq $thread.Locked false }} {{ if eq .Type "Note" }} onclick="quote('{{ $board.Actor.Id }}', '{{ $opId }}', '{{ .Id }}');return false" href="{{ .Id }}" {{ end }} {{ end }}>{{ shortURL $board.Actor.Outbox .Id }}</a> {{ if ne .Type "Tombstone" }}<div class="postMenu">
+					<span class="timestamp" data-utc="{{ .Published | timeToUnix }}">{{ .Published | timeToReadableLong }}</span> <a class="postid" id="{{ .Id }}-anchor" href="/{{ $board.PrefName }}/{{shortURL $board.Actor.Outbox $opId }}#{{ shortURL $board.Actor.Outbox .Id }}">No. </a><a class="postid" id="{{ .Id }}-link" title="{{ .Id }}" {{ if eq $thread.Locked false }} {{ if eq .Type "Note" }} onclick="quote('{{ $board.Actor.Id }}', '{{ $opId }}', '{{ .Id }}');return false" href="{{ .Id }}" {{ end }} {{ end }}>{{ shortURL $board.Actor.Outbox .Id }}</a> {{ if ne .Type "Tombstone" }}<div class="postMenu">
             <input title="Post menu" type="checkbox">
             <div class="postMenu-text">▶</div>
             <div class="postMenu-container">
                 {{ if eq $board.ModCred $board.Domain $board.Actor.Id }}
-                <a href="/delete?id={{ .Id }}&board={{ $board.Actor.Name }}" onclick="return confirm('Delete Post?');">Delete Post</a>
+                <a href="/delete?id={{ .Id }}&board={{ $board.Actor.PreferredUsername }}" onclick="return confirm('Delete Post?');">Delete Post</a>
                 <a href="/ban?actor={{ $board.Actor.Id }}&post={{ .Id }}">Ban IP</a>
                 {{ end }}
                 <a href="/make-report?actor={{ $board.Actor.Id }}&post={{ .Id }}">Report post</a>

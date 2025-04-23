@@ -19,7 +19,7 @@ func BannedGet(ctx *fiber.Ctx) error {
 	}
 
 	var data PageData
-	data.PreferredUsername = actor.PreferredUsername
+	data.Name = actor.Name
 	data.Boards = activitypub.Boards
 	data.Board.Name = ""
 	data.Key = config.Key
@@ -29,7 +29,7 @@ func BannedGet(ctx *fiber.Ctx) error {
 	data.Board.Post.Actor = actor.Id
 	data.Board.Restricted = actor.Restricted
 
-	data.Meta.Description = data.PreferredUsername + " is a federated image board based on ActivityPub. The current version of the code running on the server is still a work-in-progress product, expect a bumpy ride for the time being. Get the server code here: https://github.com/anomalous69/FChannel."
+	data.Meta.Description = data.Name + " is a federated image board based on ActivityPub. The current version of the code running on the server is still a work-in-progress product, expect a bumpy ride for the time being. Get the server code here: https://github.com/anomalous69/FChannel."
 	data.Meta.Url = data.Board.Actor.Id
 	data.Meta.Title = data.Title
 

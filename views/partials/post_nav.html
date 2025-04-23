@@ -1,13 +1,13 @@
 {{ if or (ne .ReturnTo "feed") (.Board.InReplyTo) }}
-<li>[<a href="/{{ .Board.Name }}">Return</a>]</li>
+<li>[<a href="/{{ .Board.PrefName }}">Return</a>]</li>
 {{ end }}
 {{ if and (ne .ReturnTo "catalog") (ne .Board.BoardType "text") (ne .Board.BoardType "flash") }}
-<li>[<a href="/{{ .Board.Name }}/catalog">Catalog</a>]</li>
+<li>[<a href="/{{ .Board.PrefName }}/catalog">Catalog</a>]</li>
 {{ end }}
 {{ if and (ne .ReturnTo "list") (ne .Board.BoardType "flash") }}
-<li>[<a href="/{{ .Board.Name }}/list">List</a>]</li>
+<li>[<a href="/{{ .Board.PrefName }}/list">List</a>]</li>
 {{ end }}
 {{ if and (ne .ReturnTo "archive") (ne .PostType "reply") (showArchive .Board.Actor) }}
-<li>[<a href="/{{ .Board.Name }}/archive">Archive</a>]</li>
+<li>[<a href="/{{ .Board.PrefName }}/archive">Archive</a>]</li>
 {{ end }}
 <li>[<a href="">Refresh</a>]</li>

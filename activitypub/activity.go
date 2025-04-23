@@ -340,9 +340,9 @@ func (activity Activity) MakeRequestInbox() error {
 		if e != activity.Actor.Id {
 			actor := Actor{Id: e, Inbox: e + "/inbox"}
 
-			name, instance := GetActorAndInstance(actor.Id)
+			preferedusername, instance := GetActorAndInstance(actor.Id)
 
-			if name != "main" && name != "overboard" {
+			if preferedusername != "main" && preferedusername != "overboard" {
 				go func(actor Actor, activity Activity) error {
 					var status int
 					var try int

@@ -59,7 +59,7 @@ func ParseOutboxRequest(ctx *fiber.Ctx, actor activitypub.Actor) error {
 	contentType := util.GetContentType(ctx.Get("content-type"))
 
 	if contentType == "multipart/form-data" || contentType == "application/x-www-form-urlencoded" {
-		hasCaptcha, err := util.BoardHasAuthType(actor.Name, "captcha")
+		hasCaptcha, err := util.BoardHasAuthType(actor.PreferredUsername, "captcha")
 		if err != nil {
 			return Send500(ctx, "Failed to post", util.MakeError(err, "ParseOutboxRequest"))
 		}
@@ -99,7 +99,7 @@ func ParseOutboxRequest(ctx *fiber.Ctx, actor activitypub.Actor) error {
 			op := len(nObj.InReplyTo) - 1
 			if op >= 0 {
 				if nObj.InReplyTo[op].Id == "" {
-					if actor.Name == "overboard" {
+					if actor.PreferredUsername == "overboard" {
 						return ctx.SendStatus(400)
 					}
 				}
@@ -109,11 +109,11 @@ func ParseOutboxRequest(ctx *fiber.Ctx, actor activitypub.Actor) error {
 				nObj.Sensitive = true
 			}
 
-			if actor.Name == "int" || actor.Name == "bint" {
+			if actor.PreferredUsername == "int" || actor.PreferredUsername == "bint" {
 				nObj.Alias = "cc:" + util.GetCC(ctx.Get("PosterIP"))
 			}
 
-			if actor.Name == "bint" {
+			if actor.PreferredUsername == "bint" {
 				//TODO: better way to pass IP to
 				if ctx.Get("PosterIP") == "172.16.0.1" || util.IsTorExit(ctx.Get("PosterIP")) {
 					nObj.Alias = nObj.Alias + "id:HiddenID"
@@ -129,7 +129,7 @@ func ParseOutboxRequest(ctx *fiber.Ctx, actor activitypub.Actor) error {
 				}
 			}
 
-			nObj.Actor = config.Domain + "/" + actor.Name
+			nObj.Actor = config.Domain + "/" + actor.PreferredUsername
 
 			if locked, _ := nObj.InReplyTo[0].IsLocked(); locked {
 				return Send403(ctx, "Thread is locked")
@@ -140,7 +140,7 @@ func ParseOutboxRequest(ctx *fiber.Ctx, actor activitypub.Actor) error {
 				return Send500(ctx, "Failed to post", util.MakeError(err, "ParseOutboxRequest"))
 			}
 
-			if len(nObj.To) == 0 && actor.Name != "overboard" {
+			if len(nObj.To) == 0 && actor.PreferredUsername != "overboard" {
 				if err := actor.ArchivePosts(); err != nil {
 					return Send500(ctx, "Failed to post", util.MakeError(err, "ParseOutboxRequest"))
 				}
@@ -174,7 +174,7 @@ func ParseOutboxRequest(ctx *fiber.Ctx, actor activitypub.Actor) error {
 			//op := len(nObj.InReplyTo) - 1
 			if op >= 0 {
 				if nObj.InReplyTo[op].Id == "" {
-					if actor.Name == "overboard" {
+					if actor.PreferredUsername == "overboard" {
 						return ctx.SendStatus(400)
 					}
 					id = nObj.Id
@@ -259,11 +259,12 @@ func ParseOutboxRequest(ctx *fiber.Ctx, actor activitypub.Actor) error {
 			case "New":
 				name := activity.Object.Alias
 				prefname := activity.Object.Name
+				config.Log.Println(name)
 				summary := activity.Object.Summary
 				restricted := activity.Object.Sensitive
 				boardtype := activity.Object.MediaType // Didn't want to add new struct field, close enough
 
-				actor, err := db.CreateNewBoard(*activitypub.CreateNewActor(name, prefname, summary, config.AuthReq, restricted, boardtype))
+				actor, err := db.CreateNewBoard(*activitypub.CreateNewActor(prefname, name, summary, config.AuthReq, restricted, boardtype))
 				if err != nil {
 					return util.MakeError(err, "ParseOutboxRequest")
 				}
@@ -387,7 +388,7 @@ func TemplateFunctions(engine *html.Engine) {
 	engine.AddFunc("parseReplyLink", func(actorId string, op string, id string, content string) template.HTML {
 		actor, _ := activitypub.FingerActor(actorId)
 		title := strings.ReplaceAll(db.ParseLinkTitle(actor.Id+"/", op, content), `/\&lt;`, ">")
-		link := "<a href=\"/" + actor.Name + "/" + util.ShortURL(actor.Outbox, op) + "#" + util.ShortURL(actor.Outbox, id) + "\" title=\"" + title + "\" class=\"replyLink\">&gt;&gt;" + util.ShortURL(actor.Outbox, id) + "</a>"
+		link := "<a href=\"/" + actor.PreferredUsername + "/" + util.ShortURL(actor.Outbox, op) + "#" + util.ShortURL(actor.Outbox, id) + "\" title=\"" + title + "\" class=\"replyLink\">&gt;&gt;" + util.ShortURL(actor.Outbox, id) + "</a>"
 		return template.HTML(link)
 	})
 

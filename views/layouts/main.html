@@ -8,7 +8,7 @@
     <meta name="keywords" content="Federated Imageboard based on Activtypub">
     <meta name="description" content="{{ .page.Meta.Description }}">
     <meta property="og:url" content="{{ .page.Meta.Url }}">
-    <meta property="og:site_name" content="{{ .page.Instance.PreferredUsername }}" />
+    <meta property="og:site_name" content="{{ .page.Instance.Name }}" />
 
     <meta property="og:title" content="{{ .page.Meta.Title }}">
     <meta property="og:description" content="{{ .page.Meta.Description }}">
@@ -48,20 +48,20 @@
 				<li>[<a href="/overboard">Overboard</a>]</li>
         {{range $i, $e := .page.Boards}}
         {{ if eq (sub $l 1) 0 }}
-        <li>[ <a href="{{.Location}}">{{$e.Name}} </a>]</li>
+        <li>[ <a href="{{.Location}}">{{$e.PrefName}} </a>]</li>
         {{ else if eq $i 0 }}
-        <li>[<a href="{{.Location}}">{{$e.Name}} </a>/</li>
+        <li>[<a href="{{.Location}}">{{$e.PrefName}} </a>/</li>
         {{ else if eq $i (sub $l 1) }}
-        <li><a href="{{.Location}}">{{$e.Name}}</a>]</li>
+        <li><a href="{{.Location}}">{{$e.PrefName}}</a>]</li>
         {{ else }}
-        <li><a href="{{.Location}}">{{$e.Name}} </a>/</li>
+        <li><a href="{{.Location}}">{{$e.PrefName}} </a>/</li>
         {{ end }}
         {{ end }}
 	{{ template "partials/extboards" }}
       </ul>
       {{ if .page.Board.ModCred }}
       {{ if or (eq .page.Board.ModCred .page.Board.Domain) (eq .page.Board.ModCred .page.Board.Actor.Id) }}
-      <span id="manageboard">[<a href="/{{ .page.Key }}/{{ .page.Board.Name }}">Manage Board</a>]</span>
+      <span id="manageboard">[<a href="/{{ .page.Key }}/{{ .page.Board.PrefName }}">Manage Board</a>]</span>
       {{ end }}
       {{ end }}
     </div>

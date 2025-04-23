@@ -19,12 +19,12 @@
   {{ range .page.Posts }}
   <div style="overflow: hidden; vertical-align: top; padding-right: 24px; padding-bottom: 24px; display: inline-block; width: 180px; max-height: 320px; margin-bottom: 10px;">
     {{ if eq $board.ModCred $board.Domain $board.Actor.Id }}
-    [<a href="/delete?id={{ .Id }}&board={{ $board.Actor.Name }}">Delete Post</a>]
+    [<a href="/delete?id={{ .Id }}&board={{ $board.Actor.PreferredUsername }}">Delete Post</a>]
     {{ end }}
     {{ if .Attachment }}
     {{ if eq $board.ModCred $board.Domain $board.Actor.Id }}
-    [<a href="/deleteattach?id={{ .Id }}&board={{ $board.Actor.Name }}">Delete Attachment</a>]
-    [<a href="/marksensitive?id={{ .Id }}&board={{ $board.Actor.Name }}">Mark Sensitive</a>]
+    [<a href="/deleteattach?id={{ .Id }}&board={{ $board.Actor.PreferredUsername }}">Delete Attachment</a>]
+    [<a href="/marksensitive?id={{ .Id }}&board={{ $board.Actor.PreferredUsername }}">Mark Sensitive</a>]
     {{ end }}
     <div id="hide-{{ .Id }}" style="display: none;">[Hide]</div>
     <div id="sensitive-{{ .Id }}" style="display: none;">
@@ -33,7 +33,7 @@
         <div id="sensitive-text-{{ .Id }}" style="width: 170px; position: absolute; margin-top: 75px; padding: 5px; background-color: black; color: white; cursor: default; ">NSFW Content</div>
       </div>
     </div>
-    <a id="{{ .Id }}-anchor" href="/{{ $board.Name }}/{{ shortURL $board.Actor.Outbox .Id}}">
+    <a id="{{ .Id }}-anchor" href="/{{ $board.PrefName }}/{{shortURL $board.Actor.Outbox .Id}}">
       <div id="media-{{ .Id }}" style="width:180px;"><div class="status" style="position: absolute;">{{ if .Sticky }}<span class="sticky"><img src="/static/pin.png"></span>{{ end }}{{ if .Locked }}<span class="lock"><img src="/static/locked.png"></span>{{ end }}</div>{{ parseAttachment . true }}</div>
     </a>
     <script>
@@ -60,7 +60,7 @@
       }
     </script>
     {{ end }}
-    <a style="color: unset;" id="{{ .Id }}-link" href="/{{ $board.Name }}/{{ shortURL $board.Actor.Outbox .Id }}">
+    <a style="color: unset;" id="{{ .Id }}-link" href="/{{ $board.PrefName }}/{{shortURL $board.Actor.Outbox .Id }}">
       <div style="display: block;">
         {{ $replies := .Replies }}
         {{ if $replies }}

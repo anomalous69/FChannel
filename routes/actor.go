@@ -20,7 +20,7 @@ import (
 
 func ActorInbox(ctx *fiber.Ctx) error {
 	actor, _ := activitypub.GetActorFromDB(config.Domain + "/" + ctx.Params("actor"))
-	if actor.Name == "overboard" {
+	if actor.PreferredUsername == "overboard" {
 		return ctx.SendStatus(404)
 	}
 
@@ -467,7 +467,7 @@ func ActorPost(ctx *fiber.Ctx) error {
 	// check if actually OP if not redirect to op to get full thread
 	var obj = activitypub.ObjectBase{Id: inReplyTo}
 	if OP, _ := obj.GetOP(); OP != obj.Id {
-		return ctx.Redirect(ctx.BaseURL()+"/"+actor.Name+"/"+util.ShortURL(actor.Outbox, OP)+"#"+util.ShortURL(actor.Outbox, inReplyTo), http.StatusMovedPermanently)
+		return ctx.Redirect(ctx.BaseURL()+"/"+actor.PreferredUsername+"/"+util.ShortURL(actor.Outbox, OP)+"#"+util.ShortURL(actor.Outbox, inReplyTo), http.StatusMovedPermanently)
 	}
 
 	collection, err := obj.GetCollectionFromPath()
@@ -521,7 +521,7 @@ func ActorPost(ctx *fiber.Ctx) error {
 	data.Key = config.Key
 	data.Boards = activitypub.Boards
 
-	data.Title = "/" + data.Board.Name + "/ - " + data.PostId
+	data.Title = "/" + data.Board.PrefName + "/ - " + data.PostId
 
 	if len(data.Posts) > 0 {
 		data.Meta.Description = data.Posts[0].Content
@@ -588,7 +588,7 @@ func ActorCatalog(ctx *fiber.Ctx) error {
 		data.Board.CaptchaCode = db.GetCaptchaCode(data.Board.Captcha)
 	}
 
-	data.Title = "/" + data.Board.Name + "/ - Catalog"
+	data.Title = "/" + data.Board.PrefName + "/ - Catalog"
 
 	data.Boards = activitypub.Boards
 	data.Posts = collection.OrderedItems
@@ -635,7 +635,7 @@ func ActorPosts(ctx *fiber.Ctx) error {
 	var pages []int
 	pageLimit := (float64(collection.TotalItems) / float64(offset))
 
-	if pageLimit > 11 && actor.Name != "overboard" {
+	if pageLimit > 11 && actor.PreferredUsername != "overboard" {
 		pageLimit = 11
 	}
 
@@ -670,7 +670,7 @@ func ActorPosts(ctx *fiber.Ctx) error {
 		data.Board.CaptchaCode = db.GetCaptchaCode(data.Board.Captcha)
 	}
 
-	data.Title = "/" + actor.Name + "/ - " + actor.PreferredUsername
+	data.Title = "/" + actor.PreferredUsername + "/ - " + actor.Name
 
 	data.Key = config.Key
 
@@ -738,7 +738,7 @@ func ActorArchive(ctx *fiber.Ctx) error {
 	returnData.Board.Captcha = config.Domain + "/" + capt
 	returnData.Board.CaptchaCode = db.GetCaptchaCode(returnData.Board.Captcha)
 
-	returnData.Title = "/" + actor.Name + "/ - Archive"
+	returnData.Title = "/" + actor.PreferredUsername + "/ - Archive"
 
 	returnData.Boards = activitypub.Boards
 
@@ -795,7 +795,7 @@ func ActorList(ctx *fiber.Ctx) error {
 		data.Board.CaptchaCode = db.GetCaptchaCode(data.Board.Captcha)
 	}
 
-	data.Title = "/" + actor.Name + "/ - Thread list"
+	data.Title = "/" + actor.PreferredUsername + "/ - Thread list"
 	data.Key = config.Key
 
 	data.Boards = activitypub.Boards

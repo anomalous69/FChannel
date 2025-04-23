@@ -627,8 +627,8 @@ func ReportGet(ctx *fiber.Ctx) error {
 	data.Board.Domain = config.Domain
 	data.Boards = activitypub.Boards
 
-	data.Referer = config.Domain + "/" + actor.Name
-	if strings.Contains(ctx.Get("referer"), config.Domain+"/"+actor.Name) && !strings.Contains(ctx.Get("referer"), "make-report") {
+	data.Referer = config.Domain + "/" + actor.PreferredUsername
+	if strings.Contains(ctx.Get("referer"), config.Domain+"/"+actor.PreferredUsername) && !strings.Contains(ctx.Get("referer"), "make-report") {
 		data.Referer = ctx.Get("referer")
 	}
 
@@ -785,8 +785,8 @@ func BanGet(ctx *fiber.Ctx) error {
 	var baninfo BanInfo
 	baninfo.Bans, _ = db.GetAllBansForIP(ip)
 
-	data.Referer = config.Domain + "/" + actor.Name
-	if strings.Contains(ctx.Get("referer"), config.Domain+"/"+actor.Name) && !strings.Contains(ctx.Get("referer"), "ban") {
+	data.Referer = config.Domain + "/" + actor.PreferredUsername
+	if strings.Contains(ctx.Get("referer"), config.Domain+"/"+actor.PreferredUsername) && !strings.Contains(ctx.Get("referer"), "ban") {
 		data.Referer = ctx.Get("referer")
 	}
 

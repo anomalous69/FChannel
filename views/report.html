@@ -1,5 +1,5 @@
 <div style="max-width: 800px; margin: 0 auto;">
-  <h1 style="text-align: center;">/{{ .page.Board.Name }}/ - {{ .page.Board.PrefName }}</h1>
+  <h1 style="text-align: center;">/{{ .page.Board.PrefName }}/ - {{ .page.Board.Name }}</h1>
   <p style="text-align: center;">{{ .page.Board.Summary }}</p>
 </div>
 
@@ -14,7 +14,7 @@
       <input id="report-submit" type="submit" value="Report" style="float: right;">
       <input type="hidden" id="report-inReplyTo-box" name="id" value="{{ .page.Board.InReplyTo }}">
       <input type="hidden" id="sendTo" name="sendTo" value="{{ .page.Board.To }}">
-      <input type="hidden" id="boardName" name="board" value="{{ .page.Board.Name }}">
+      <input type="hidden" id="boardName" name="board" value="{{ .page.Board.PrefName }}">
       <input type="hidden" name="close" value="0">
       <input type="hidden" id="captchaCode" name="captchaCode" value="{{ .page.Board.CaptchaCode }}">
 			<input type="hidden" id="referer" name="referer" value="{{ .page.Referer }}">

@@ -64,16 +64,16 @@ func CreateAttachmentObject(file multipart.File, header *multipart.FileHeader) (
 	return nAttachment, tempFile, nil
 }
 
-func CreateNewActor(board string, prefName string, summary string, authReq []string, restricted bool, boardtype string) *Actor {
+func CreateNewActor(board string, name string, summary string, authReq []string, restricted bool, boardtype string) *Actor {
 	actor := new(Actor)
 
 	var path string
 	if board == "" {
 		path = config.Domain
-		actor.Name = "main"
+		actor.PreferredUsername = "main"
 	} else {
 		path = config.Domain + "/" + board
-		actor.Name = board
+		actor.PreferredUsername = board
 	}
 
 	actor.Type = "Group"
@@ -82,7 +82,7 @@ func CreateNewActor(board string, prefName string, summary string, authReq []str
 	actor.Followers = fmt.Sprintf("%s/followers", actor.Id)
 	actor.Inbox = fmt.Sprintf("%s/inbox", actor.Id)
 	actor.Outbox = fmt.Sprintf("%s/outbox", actor.Id)
-	actor.PreferredUsername = prefName
+	actor.Name = name
 	actor.Restricted = restricted
 	actor.Summary = summary
 	actor.AuthRequirement = authReq
@@ -252,8 +252,8 @@ func GetActorByNameFromDB(name string) (Actor, error) {
 	var nActor Actor
 	var publicKeyPem string
 
-	query := `select type, id, name, preferedusername, inbox, outbox, following, followers, restricted, summary, publickeypem, boardtype from actor where name=$1`
-	err := config.DB.QueryRow(query, name).Scan(&nActor.Type, &nActor.Id, &nActor.Name, &nActor.PreferredUsername, &nActor.Inbox, &nActor.Outbox, &nActor.Following, &nActor.Followers, &nActor.Restricted, &nActor.Summary, &publicKeyPem, &nActor.BoardType)
+	query := `select type, id, preferredusername, name, inbox, outbox, following, followers, restricted, summary, publickeypem, boardtype from actor where preferredusername=$1`
+	err := config.DB.QueryRow(query, name).Scan(&nActor.Type, &nActor.Id, &nActor.PreferredUsername, &nActor.Name, &nActor.Inbox, &nActor.Outbox, &nActor.Following, &nActor.Followers, &nActor.Restricted, &nActor.Summary, &publicKeyPem, &nActor.BoardType)
 
 	if err != nil {
 		return nActor, util.MakeError(err, "GetActorByNameFromDB")
@@ -324,8 +324,8 @@ func GetActorFromDB(id string) (Actor, error) {
 	var nActor Actor
 	var publicKeyPem string
 
-	query := `select type, id, name, preferedusername, inbox, outbox, following, followers, restricted, summary, publickeypem from actor where id=$1`
-	err := config.DB.QueryRow(query, id).Scan(&nActor.Type, &nActor.Id, &nActor.Name, &nActor.PreferredUsername, &nActor.Inbox, &nActor.Outbox, &nActor.Following, &nActor.Followers, &nActor.Restricted, &nActor.Summary, &publicKeyPem)
+	query := `select type, id, preferredusername, name, inbox, outbox, following, followers, restricted, summary, publickeypem from actor where id=$1`
+	err := config.DB.QueryRow(query, id).Scan(&nActor.Type, &nActor.Id, &nActor.PreferredUsername, &nActor.Name, &nActor.Inbox, &nActor.Outbox, &nActor.Following, &nActor.Followers, &nActor.Restricted, &nActor.Summary, &publicKeyPem)
 
 	if err != nil {
 		return nActor, util.MakeError(err, "GetActorFromDB")
@@ -393,7 +393,7 @@ func GetActorsFollowPostFromId(actors []string, id string) (Collection, error) {
 func GetBoards() ([]Actor, error) {
 	var boards []Actor
 
-	query := `select type, id, name, preferedusername, inbox, outbox, following, followers FROM actor`
+	query := `select type, id, preferredusername, name, inbox, outbox, following, followers FROM actor`
 	rows, err := config.DB.Query(query)
 
 	if err != nil {
@@ -404,7 +404,7 @@ func GetBoards() ([]Actor, error) {
 	for rows.Next() {
 		var actor = new(Actor)
 
-		if err := rows.Scan(&actor.Type, &actor.Id, &actor.Name, &actor.PreferredUsername, &actor.Inbox, &actor.Outbox, &actor.Following, &actor.Followers); err != nil {
+		if err := rows.Scan(&actor.Type, &actor.Id, &actor.PreferredUsername, &actor.Name, &actor.Inbox, &actor.Outbox, &actor.Following, &actor.Followers); err != nil {
 			return boards, util.MakeError(err, "GetBoards")
 		}
 

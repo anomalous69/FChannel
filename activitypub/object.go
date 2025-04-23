@@ -127,9 +127,9 @@ func (obj ObjectBase) CreatePreview() *NestedObjectBase {
 	var cmd *exec.Cmd
 	switch obj.MediaType {
 	case "image/gif":
-		cmd = exec.Command("convert", "."+objFile, "-coalesce", "-scale", "250x250>", "+dither", "-remap", "."+objFile+"[0]", "-layers", "Optimize", "-strip", "."+href)
+		cmd = exec.Command("magick", "."+objFile, "-coalesce", "-scale", "250x250>", "+dither", "-remap", "."+objFile+"[0]", "-layers", "Optimize", "-strip", "."+href)
 	default:
-		cmd = exec.Command("convert", "."+objFile, "-resize", "250x250>", "-strip", "."+href)
+		cmd = exec.Command("magick", "."+objFile, "-resize", "250x250>", "-strip", "."+href)
 	}
 
 	if err := cmd.Run(); err != nil {
@@ -1530,7 +1530,7 @@ func (obj ObjectBase) SendEmailNotify() error {
 	user := config.SiteEmailUsername
 	pass := config.SiteEmailPassword
 	to := config.SiteEmailNotifyTo
-	posturl := config.Domain + "/" + actor.Name + "/" + util.ShortURL(actor.Outbox, obj.Id)
+	posturl := config.Domain + "/" + actor.PreferredUsername + "/" + util.ShortURL(actor.Outbox, obj.Id)
 	// If preview exists assume type image and use that
 	// Else if no preview and Object.Attachment exists
 	// check if video/audio to use correct element
@@ -1549,7 +1549,7 @@ func (obj ObjectBase) SendEmailNotify() error {
 		}
 	}
 	//mime := ""
-	//body := fmt.Sprintf("New post: %s\n\n--- Post ---\n%s\n", config.Domain+"/"+actor.Name+"/"+util.ShortURL(actor.Outbox, obj.Id), obj.Content)
+	//body := fmt.Sprintf("New post: %s\n\n--- Post ---\n%s\n", config.Domain+"/"+actor.PreferredUsername+"/"+util.ShortURL(actor.Outbox, obj.Id), obj.Content)
 	mime := "MIME-version: 1.0;\nContent-Type: text/html; charset=\"UTF-8\";"
 	body := fmt.Sprintf("<html><body>New post: <a href='%s'>%s</a><br><br>%s<br><br><b>%s %s</b><br>%s<br><pre>%s</pre></body></html>", posturl, posturl, attachment, obj.AttributedTo, obj.TripCode, obj.Name, obj.Content)
 
