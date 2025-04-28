@@ -50,7 +50,7 @@ type Board struct {
 type BoardSortAsc []Board
 
 func (a BoardSortAsc) Len() int           { return len(a) }
-func (a BoardSortAsc) Less(i, j int) bool { return a[i].Name < a[j].Name }
+func (a BoardSortAsc) Less(i, j int) bool { return a[i].PrefName < a[j].PrefName }
 func (a BoardSortAsc) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
 
 func GetActor(id string) (Actor, error) {
