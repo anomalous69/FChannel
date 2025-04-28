@@ -12,7 +12,6 @@ require (
 	github.com/golang-migrate/migrate/v4 v4.18.2
 	github.com/gorilla/feeds v1.2.0
 	github.com/jackc/pgx/v5 v5.7.2
-	github.com/mikekonan/go-countries v1.1.2
 	github.com/oschwald/maxminddb-golang v1.13.1
 	github.com/simia-tech/crypt v0.5.1
 	github.com/sourcegraph/syntaxhighlight v0.0.0-20170531221838-bd320f5d308e

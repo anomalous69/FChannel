@@ -15,14 +15,12 @@ import (
 	"strings"
 	"time"
 
-	"github.com/anomalous69/fchannel/util"
-
 	"github.com/anomalous69/fchannel/activitypub"
 	"github.com/anomalous69/fchannel/config"
 	"github.com/anomalous69/fchannel/db"
+	"github.com/anomalous69/fchannel/util"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/template/html/v2"
-	country "github.com/mikekonan/go-countries"
 )
 
 func GetThemeCookie(c *fiber.Ctx) string {
@@ -505,19 +503,8 @@ func TemplateFunctions(engine *html.Engine) {
 			html = " <span class=\"posteruid id_" + id + "\">(ID: <span class=\"id\" style=\"background-color: " + bgcol + "; color: " + txtcol + ";\">" + id + "</span>)</span>"
 		}
 		if cc != "" {
-			var countryname string
 			cc = strings.TrimPrefix(cc, "cc:")
-			//TODO: remove external library for country
-			switch cc {
-			case "xp":
-				countryname = "Tor/Proxy"
-			default:
-				if posterCountry, ok := country.ByAlpha2CodeStr(cc); ok {
-					countryname = posterCountry.Name().String()
-				} else {
-					countryname = "Unknown/Hidden"
-				}
-			}
+			countryname := util.GetCountryName(cc)
 			html = html + " <span title=\"" + countryname + "\" class=\"flag flag-" + cc + "\"></span>"
 		}
 		return template.HTML(html)
