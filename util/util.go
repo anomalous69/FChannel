@@ -17,12 +17,21 @@ import (
 	"github.com/gabriel-vasile/mimetype"
 )
 
+var domainPattern string
+
+func init() {
+	domainPattern = fmt.Sprintf("%s/%%/", config.Domain)
+}
+
 func IsOnion(url string) bool {
 	re := regexp.MustCompile(`(\.onion|\.loki|\.i2p)`)
 	return re.MatchString(url)
 }
 
 func IsTorExit(ip string) bool {
+	if len(config.TorExitList) == 0 {
+		return false
+	}
 	exits, err := os.ReadFile(config.TorExitList)
 	if err != nil {
 		config.Log.Println("IsTorExit: Failed to read file \"" + config.TorExitList + ".")
@@ -189,19 +198,28 @@ func EscapeString(text string) string {
 }
 
 func CreateUniqueID(actor string) (string, error) {
-	var newID string
+	const maxAttempts = 10
 
-	for {
-		newID = RandomID(8)
-		query := "select id from activitystream where id=$1"
-		args := fmt.Sprintf("%s/%s/%s", config.Domain, actor, newID)
+	for attempt := 0; attempt < maxAttempts; attempt++ {
+		newID := RandomID(8)
+		query := "SELECT EXISTS(SELECT 1 FROM activitystream WHERE id >= $1 AND id < $2 LIMIT 1)"
+		prefix := domainPattern + newID
+		nextPrefix := domainPattern + newID[0:len(newID)-1] + string(newID[len(newID)-1]+1)
 
-		if err := config.DB.QueryRow(query, args); err != nil {
-			break
+		var exists bool
+		err := config.DB.QueryRow(query, prefix, nextPrefix).Scan(&exists)
+		if err != nil {
+			return "", MakeError(err, "CreateUniqueID")
 		}
+
+		if !exists {
+			return newID, nil
+		}
+
+		config.Log.Printf("CreateUniqueID: ID collision detected for %s on attempt %d", newID, attempt+1)
 	}
 
-	return newID, nil
+	return "", MakeError(errors.New("server failed to generate unique post id"), "CreateUniqueID")
 }
 
 func GetFileContentType(out multipart.File) (string, error) {

@@ -1,12 +1,14 @@
 package util
 
 import (
+	"crypto/rand"
 	"crypto/sha512"
 	"encoding/hex"
 	"errors"
-	"math/rand"
+	"math/big"
 	"os"
 	"strings"
+	"time"
 
 	"github.com/anomalous69/fchannel/config"
 	"github.com/gofiber/fiber/v2/middleware/encryptcookie"
@@ -49,11 +51,24 @@ func GetCookieKey() (string, error) {
 }
 
 func RandomID(size int) string {
-	rng := size
 	newID := strings.Builder{}
+	newID.Grow(size)
+	max := big.NewInt(int64(len(domain)))
 
-	for i := 0; i < rng; i++ {
-		newID.WriteByte(domain[rand.Intn(len(domain))])
+	for i := 0; i < size; i++ {
+		n, err := rand.Int(rand.Reader, max)
+		if err != nil {
+			// Fallback to time-based value using domain charset if crypto/rand fails
+			config.Log.Printf("RandomID: crypto/rand failed: %v", err)
+			timestamp := time.Now().UnixNano()
+			// Use timestamp to generate deterministic but unique values
+			for i := 0; i < size; i++ {
+				pos := (timestamp >> (i * 4)) % int64(len(domain))
+				newID.WriteByte(domain[pos])
+			}
+			return newID.String()
+		}
+		newID.WriteByte(domain[n.Int64()])
 	}
 
 	return newID.String()

@@ -53,6 +53,7 @@ func GetActorPost(ctx *fiber.Ctx, path string) error {
 	return util.MakeError(err, "GetActorPost")
 }
 
+// TODO: Find way to alert user of errors
 func ParseOutboxRequest(ctx *fiber.Ctx, actor activitypub.Actor) error {
 	pw, _ := util.GetPasswordFromSession(ctx)
 	needCaptcha := pw == ""
