@@ -3,7 +3,7 @@
 <script src="/static/ruffle/ruffle.js"></script>
 
 <div style="max-width: 800px; margin: 0 auto;">
-  <h1 style="text-align: center;">/{{ $board.Name }}/ - {{ $board.PrefName }}</h1>
+  <h1 style="text-align: center;">/{{ $board.PrefName }}/ - {{ $board.Name }}</h1>
   <p style="text-align: center;">{{ $board.Summary }}</p>
   <h3 id="newpostbtn"  state="0" style="display: none; margin-bottom:100px;">[<a href="javascript:startNewPost()">Start a New Thread</a>]</h3>
   <div id="newpost">
@@ -64,7 +64,7 @@
 
       <input type="hidden" id="inReplyTo" name="inReplyTo" value="{{ $board.InReplyTo }}">
       <input type="hidden" id="sendTo" name="sendTo" value="{{ $board.To }}">
-      <input type="hidden" id="boardName" name="boardName" value="{{ $board.Name }}">
+      <input type="hidden" id="boardName" name="boardName" value="{{ $board.PrefName }}">
       <input type="hidden" id="returnTo" name="returnTo" value="{{ .page.ReturnTo }}">
     </form>
   </div>
@@ -126,7 +126,7 @@
   <tr class="box-alt">
 		<td>{{ if .Sticky }}<span id="sticky"><img src="/static/pin.png"></span>{{ end }} {{ if .Locked }} <span id="lock"><img src="/static/locked.png"></span>{{ end }}</td>
     {{ if eq $board.ModCred $board.Domain $board.Actor.Id }}
-    <td>[<a href="/delete?id={{ $e.Id }}&board={{ $board.Name }}">Delete</a>]</td>
+    <td>[<a href="/delete?id={{ $e.Id }}&board={{ $board.PrefName }}">Delete</a>]</td>
     {{ end }}
 		<td>{{ shortURL $board.Actor.Outbox $e.Id }}</td>
 		<td><span class="name{{if eq .TripCode "#Admin"}} capcodeAdmin{{end}}{{if eq .TripCode "#Mod"}} capcodeMod{{end}}{{if eq .TripCode "#Janitor"}} capcodeJanitor{{end}}"><b>{{ .Alias | parseEmail }}{{ if .AttributedTo }}{{ .AttributedTo }}{{ else }}Anonymous{{ end }}{{ if .Alias }}</a>{{ end }}</b></span><span class="tripcode{{if eq .TripCode "#Admin"}} capcodeAdmin{{end}}{{if eq .TripCode "#Mod"}} capcodeMod{{end}}{{if eq .TripCode "#Janitor"}} capcodeJanitor{{end}}"> {{ .TripCode }} </span>{{ .Alias | parseIDandFlag }}</td>
@@ -142,7 +142,7 @@
   <tr class="box">
 		<td>{{ if .Sticky }}<span id="sticky"><img src="/static/pin.png"></span>{{ end }} {{ if .Locked }} <span id="lock"><img src="/static/locked.png"></span>{{ end }}</td>
     {{ if eq $board.ModCred $board.Domain $board.Actor.Id }}
-    <td>[<a href="/delete?id={{ $e.Id }}&board={{ $board.Name }}">Delete</a>]</td>
+    <td>[<a href="/delete?id={{ $e.Id }}&board={{ $board.PrefName }}">Delete</a>]</td>
     {{ end }}
     <td>{{ shortURL $board.Actor.Outbox $e.Id }}</td>
 		<td><span class="name{{if eq .TripCode "#Admin"}} capcodeAdmin{{end}}{{if eq .TripCode "#Mod"}} capcodeMod{{end}}{{if eq .TripCode "#Janitor"}} capcodeJanitor{{end}}"><b>{{ .Alias | parseEmail }}{{ if .AttributedTo }}{{ .AttributedTo }}{{ else }}Anonymous{{ end }}{{ if .Alias }}</a>{{ end }}</b></span><span class="tripcode{{if eq .TripCode "#Admin"}} capcodeAdmin{{end}}{{if eq .TripCode "#Mod"}} capcodeMod{{end}}{{if eq .TripCode "#Janitor"}} capcodeJanitor{{end}}"> {{ .TripCode }} </span>{{ .Alias | parseIDandFlag }}</td>

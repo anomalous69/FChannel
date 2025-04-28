@@ -33,7 +33,7 @@
   <div style="margin-bottom: 12px; color: grey;">also https://fchan.xyz/g/following or https://fchan.xyz/g/followers</div>
   <ul style="display: inline-block; padding: 0; margin: 0; list-style-type: none;">
     {{ range .page.Following }}
-    <li>[<a href="/{{ $key }}/{{ $board.Name }}/follow?follow={{ . }}&actor={{ $actor }}">Unsubscribe</a>]<a href="{{ . }}">{{ . }}</a></li>
+    <li>[<a href="/{{ $key }}/{{ $board.PrefName }}/follow?follow={{ . }}&actor={{ $actor }}">Unsubscribe</a>]<a href="{{ . }}">{{ . }}</a></li>
     {{ end }}
   </ul>
 </div>
@@ -80,7 +80,7 @@
   </form>
   <ul style="display: inline-block; padding: 0; margin: 0; list-style-type: none;">
     {{ range .jannies }}
-    <li>{{ .Label }} - <b>Login:</b> {{ .Identifier }} <b>Code:</b> {{ .Code }} [<a href="/{{ $key }}/{{ $board.Name }}/deletejanny?code={{ .Code }}">Revoke</a>]</li>
+    <li>{{ .Label }} - <b>Login:</b> {{ .Identifier }} <b>Code:</b> {{ .Code }} [<a href="/{{ $key }}/{{ $board.PrefName }}/deletejanny?code={{ .Code }}">Revoke</a>]</li>
     {{ end }}
   </ul>
 </div>

@@ -34,22 +34,22 @@
 <div class="pagelist">
   {{ $page := .page.CurrentPage }}
   {{ if gt $page 0 }}
-	<div class="pages prev">[<a href="/{{ $board.Name }}?page={{ sub $page 1 }}" title="Previous">&lt;</a>]</div>
+	<div class="pages prev">[<a href="/{{ $board.PrefName }}?page={{ sub $page 1 }}" title="Previous">&lt;</a>]</div>
   {{ end }}
   {{ range $i, $e := .page.Pages }}
 	<div class="pages">
     {{ if eq $i $page}}
-    [<strong><a href="/{{ $board.Name }}?page={{ $i }}">{{ $i }}</a></strong>]
+    [<strong><a href="/{{ $board.PrefName }}?page={{ $i }}">{{ $i }}</a></strong>]
     {{ else }}
-    [<a href="/{{ $board.Name }}?page={{ $i }}">{{ $i }}</a>]
+    [<a href="/{{ $board.PrefName }}?page={{ $i }}">{{ $i }}</a>]
     {{ end }}
 	</div>
   {{ end }}
   {{ if lt .page.CurrentPage .page.TotalPage }}
-	<div class="pages next">[<a href="/{{ $board.Name }}?page={{ add $page 1 }}" title="Next">&gt;</a>]</div>
+	<div class="pages next">[<a href="/{{ $board.PrefName }}?page={{ add $page 1 }}" title="Next">&gt;</a>]</div>
   {{ end }}
-	<div class="pages cataloglink"><a href="/{{ $board.Name }}/catalog">Catalog</a></div>
-	{{ if (showArchive $board.Actor) }}<div class="pages cataloglink"><a href="/{{ $board.Name }}/archive">Archive</a></div>{{ end }}
+	<div class="pages cataloglink"><a href="/{{ $board.PrefName }}/catalog">Catalog</a></div>
+	{{ if (showArchive $board.Actor) }}<div class="pages cataloglink"><a href="/{{ $board.PrefName }}/archive">Archive</a></div>{{ end }}
 </div>
 {{ end }}
 

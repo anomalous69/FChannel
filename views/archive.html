@@ -23,7 +23,7 @@
   {{ if mod $i 2 }}
   <tr class="box-alt">
     {{ if eq $board.ModCred $board.Domain $board.Actor.Id }}
-		<td>[<a href="/poparchive?id={{ $e.Id }}&board={{ $board.Name }}">Pop</a>]</td>
+		<td>[<a href="/poparchive?id={{ $e.Id }}&board={{ $board.PrefName }}">Pop</a>]</td>
     {{ end }}
     <td>{{ shortURL $board.Actor.Outbox $e.Id }}</td>
     <td style="overflow: hidden; word-wrap: break-word; text-overflow: ellipsis; padding-left: 5px;">{{ shortExcerpt $e }}</td>
@@ -32,7 +32,7 @@
   {{ else }}
   <tr class="box">
     {{ if eq $board.ModCred $board.Domain $board.Actor.Id }}
-		<td>[<a href="/poparchive?id={{ $e.Id }}&board={{ $board.Name }}">Pop</a>]</td>
+		<td>[<a href="/poparchive?id={{ $e.Id }}&board={{ $board.PrefName }}">Pop</a>]</td>
     {{ end }}
     <td>{{ shortURL $board.Actor.Outbox $e.Id }}</td>
     <td style="overflow: hidden; word-wrap: break-word; text-overflow: ellipsis; padding-left: 5px;">{{ shortExcerpt $e }}</td>
