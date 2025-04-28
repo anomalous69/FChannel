@@ -66,7 +66,7 @@ func main() {
 		Except: []string{"csrf_", "theme"},
 	}))
 
-	app.Static("/static", "./views")
+	app.Static("/static", "./static")
 	app.Static("/public", "./public")
 
 	// Main actor
