@@ -48,9 +48,11 @@ func ParseCommentForReplies(comment string, op string) ([]activitypub.ObjectBase
 	for i := 0; i < len(match); i++ {
 		str := strings.Replace(match[i][0], ">>", "", 1)
 		str = strings.Replace(str, "www.", "", 1)
-		str = strings.Replace(str, "http://", "", 1)
-		str = strings.Replace(str, "https://", "", 1)
-		str = config.TP + "" + str
+		if strings.HasPrefix(str, "http://") || strings.HasPrefix(str, "https://") {
+			str = strings.Replace(str, "http://", "", 1)
+			str = strings.Replace(str, "https://", "", 1)
+		}
+		str = config.TP + str
 		_, isReply, err := IsReplyToOP(op, str)
 
 		if err != nil {
@@ -91,6 +93,10 @@ func ParseCommentForReply(comment string) (string, error) {
 
 	for i := 0; i < len(match); i++ {
 		str := strings.Replace(match[i][0], ">>", "", 1)
+		if strings.HasPrefix(str, "http://") || strings.HasPrefix(str, "https://") {
+			str = strings.Replace(str, "http://", "", 1)
+			str = strings.Replace(str, "https://", "", 1)
+		}
 		links = append(links, str)
 	}
 
@@ -322,7 +328,7 @@ func ObjectFromForm(ctx *fiber.Ctx, obj activitypub.ObjectBase) (activitypub.Obj
 	re := regexp.MustCompile(`>>([a-zA-Z0-9-]*)`)
 	match := re.FindAllStringSubmatch(obj.Content, -1)
 	for i := 0; i < len(match); i++ {
-		if !strings.Contains(match[i][0], "https") {
+		if !strings.Contains(match[i][0], "http") {
 			curid := strings.Replace(match[i][0], ">>", "", -1)
 			curid = regexp.MustCompile(`\S*-`).ReplaceAllString(curid, "")
 			replyid, err := GetPostIDFromNum(curid)
