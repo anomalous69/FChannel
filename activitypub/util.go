@@ -64,7 +64,7 @@ func CreateAttachmentObject(file multipart.File, header *multipart.FileHeader) (
 	return nAttachment, tempFile, nil
 }
 
-func CreateNewActor(board string, name string, summary string, authReq []string, restricted bool, boardtype string) *Actor {
+func CreateNewActor(board string, name string, summary string, authReq []string, restricted bool, boardtype string, optionsmask int) *Actor {
 	actor := new(Actor)
 
 	var path string
@@ -87,6 +87,7 @@ func CreateNewActor(board string, name string, summary string, authReq []string,
 	actor.Summary = summary
 	actor.AuthRequirement = authReq
 	actor.BoardType = boardtype
+	actor.OptionsMask = optionsmask
 
 	return actor
 }
@@ -252,8 +253,8 @@ func GetActorByNameFromDB(name string) (Actor, error) {
 	var nActor Actor
 	var publicKeyPem string
 
-	query := `select type, id, preferredusername, name, inbox, outbox, following, followers, restricted, summary, publickeypem, boardtype from actor where preferredusername=$1`
-	err := config.DB.QueryRow(query, name).Scan(&nActor.Type, &nActor.Id, &nActor.PreferredUsername, &nActor.Name, &nActor.Inbox, &nActor.Outbox, &nActor.Following, &nActor.Followers, &nActor.Restricted, &nActor.Summary, &publicKeyPem, &nActor.BoardType)
+	query := `select type, id, preferredusername, name, inbox, outbox, following, followers, restricted, summary, publickeypem, boardtype, optionsmask from actor where preferredusername=$1`
+	err := config.DB.QueryRow(query, name).Scan(&nActor.Type, &nActor.Id, &nActor.PreferredUsername, &nActor.Name, &nActor.Inbox, &nActor.Outbox, &nActor.Following, &nActor.Followers, &nActor.Restricted, &nActor.Summary, &publicKeyPem, &nActor.BoardType, &nActor.OptionsMask)
 
 	if err != nil {
 		return nActor, util.MakeError(err, "GetActorByNameFromDB")

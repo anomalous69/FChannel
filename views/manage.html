@@ -14,6 +14,7 @@
     <li style="display: inline-block;">[<a href="#reported"> Reported </a>]</li>
     {{ if eq .page.Board.ModCred "admin" }}
     <li style="display: inline-block;">[<a href="#jannies"> Janitor Managment </a>]</li>
+    <li style="display: inline-block;">[<a href="#boardsettings"> Board Settings </a>]</li>
     {{ end }}
   </ul>
 </div>
@@ -96,8 +97,16 @@
       <option value="text"{{if eq "text" .page.BoardType}} selected{{end}}>Text</option>
       <option value="flash"{{if eq "flash" .page.BoardType}} selected{{end}}>Flash</option>
     </select> 
-    <input type="submit" value="Set board type"><br>
-    <input type="hidden" name="actor" value="{{ $board.Actor.Id }}">
+    <input type="submit" value="Set board type">
+  </form>
+  <form id="boardoptions-form" action="/{{ .page.Key }}/{{ .page.Board.PrefName }}/setboardoptions" method="post" enctype="application/x-www-form-urlencoded" style="margin-top: 10px;">
+    <label>Board Options:</label><br>
+    <label><input type="checkbox" name="option_id" value="1" {{if HasBoardOption .page.Board.Actor 1}}checked{{end}}> IDs</label>
+    <label><input type="checkbox" name="option_flag" value="1" {{if HasBoardOption .page.Board.Actor 2}}checked{{end}}> Flags</label>
+    <label><input type="checkbox" name="option_tripcode" value="1" {{if HasBoardOption .page.Board.Actor 4}}checked{{end}}> Tripcodes</label>
+    <label><input type="checkbox" name="option_anon" value="1" {{if HasBoardOption .page.Board.Actor 8}}checked{{end}}> Anonymous</label>
+    <br>
+    <input type="submit" value="Set board options"><br>
   </form>
   <ul style="display: inline-block; padding: 0; margin: 0; list-style-type: none;">
   </ul>

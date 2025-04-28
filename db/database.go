@@ -97,14 +97,14 @@ func CreateNewBoard(actor activitypub.Actor) (activitypub.Actor, error) {
 		if actor.BoardType != "text" && actor.BoardType != "flash" {
 			actor.BoardType = "image"
 		}
-		query := `insert into actor (type, id, name, preferredusername, inbox, outbox, following, followers, summary, restricted, boardtype) values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)`
-		_, err := config.DB.Exec(query, actor.Type, actor.Id, actor.Name, actor.PreferredUsername, actor.Inbox, actor.Outbox, actor.Following, actor.Followers, actor.Summary, actor.Restricted, actor.BoardType)
+		query := `insert into actor (type, id, name, preferredusername, inbox, outbox, following, followers, summary, restricted, boardtype, optionsmask) values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)`
+		_, err := config.DB.Exec(query, actor.Type, actor.Id, actor.Name, actor.PreferredUsername, actor.Inbox, actor.Outbox, actor.Following, actor.Followers, actor.Summary, actor.Restricted, actor.BoardType, actor.OptionsMask)
 
 		if err != nil {
 			return activitypub.Actor{}, util.MakeError(err, "CreateNewBoardDB")
 		}
 
-		config.Log.Println("board added")
+		config.Log.Println("Board /" + actor.PreferredUsername + "/ added")
 
 		for _, e := range actor.AuthRequirement {
 			query = `insert into actorauth (type, board) values ($1, $2)`
@@ -469,7 +469,7 @@ func PrintAdminAuth() error {
 
 func InitInstance() error {
 	if config.InstanceName != "" {
-		if _, err := CreateNewBoard(*activitypub.CreateNewActor("", config.InstanceName, config.InstanceSummary, config.AuthReq, false, "")); err != nil {
+		if _, err := CreateNewBoard(*activitypub.CreateNewActor("", config.InstanceName, config.InstanceSummary, config.AuthReq, false, "", 0)); err != nil {
 			return util.MakeError(err, "InitInstance")
 		}
 	}

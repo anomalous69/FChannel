@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"regexp"
 	"sort"
+	"strconv"
 	"time"
 
 	"github.com/anomalous69/fchannel/activitypub"
@@ -178,6 +179,22 @@ func AdminAddBoard(ctx *fiber.Ctx) error {
 		return Send400(ctx, "Board type \""+board.BoardType+"\" is invalid")
 	}
 
+	// Calculate OptionsMask from form checkboxes
+	var optionsMask int
+	if ctx.FormValue("option_id") == "1" {
+		optionsMask |= activitypub.OptionID
+	}
+	if ctx.FormValue("option_flag") == "1" {
+		optionsMask |= activitypub.OptionFlag
+	}
+	if ctx.FormValue("option_tripcode") == "1" {
+		optionsMask |= activitypub.OptionTripcode
+	}
+	if ctx.FormValue("option_anon") == "1" {
+		optionsMask |= activitypub.OptionAnonymous
+	}
+	board.OptionsMask = optionsMask
+
 	newActorActivity.AtContext.Context = "https://www.w3.org/ns/activitystreams"
 	newActorActivity.Type = "New"
 
@@ -190,6 +207,7 @@ func AdminAddBoard(ctx *fiber.Ctx) error {
 	newActorActivity.Object.Summary = board.Summary
 	newActorActivity.Object.Sensitive = board.Restricted
 	newActorActivity.Object.MediaType = board.BoardType // Didn't want to add new struct field, close enough
+	newActorActivity.Object.Option = []string{strconv.Itoa(board.OptionsMask)}
 
 	newActorActivity.MakeRequestOutbox()
 
@@ -409,6 +427,47 @@ func AdminDeleteJanny(ctx *fiber.Ctx) error {
 
 	var redirect string
 
+	if actor.PreferredUsername != "main" {
+		redirect = actor.PreferredUsername
+	}
+
+	return ctx.Redirect("/"+config.Key+"/"+redirect, http.StatusSeeOther)
+}
+
+func AdminSetBoardOptions(ctx *fiber.Ctx) error {
+	id, pass := util.GetPasswordFromSession(ctx)
+	actor, _ := activitypub.GetActorFromPath(ctx.Path(), "/"+config.Key+"/")
+
+	if actor.Id == "" {
+		actor, _ = activitypub.GetActorByNameFromDB(config.Domain)
+	}
+
+	hasAuth, _type := util.HasAuth(pass, actor.Id)
+	if !hasAuth || _type != "admin" || (id != actor.Id && id != config.Domain) {
+		return util.MakeError(errors.New("Error"), "AdminSetBoardOptions")
+	}
+
+	// Build the new options mask from the form
+	optionsMask := 0
+	if ctx.FormValue("option_id") == "1" {
+		optionsMask |= activitypub.OptionID
+	}
+	if ctx.FormValue("option_flag") == "1" {
+		optionsMask |= activitypub.OptionFlag
+	}
+	if ctx.FormValue("option_tripcode") == "1" {
+		optionsMask |= activitypub.OptionTripcode
+	}
+	if ctx.FormValue("option_anon") == "1" {
+		optionsMask |= activitypub.OptionAnonymous
+	}
+
+	query := `update actor set optionsmask=$1 where id=$2`
+	if _, err := config.DB.Exec(query, optionsMask, actor.Id); err != nil {
+		return util.MakeError(err, "AdminSetBoardOptions")
+	}
+
+	var redirect string
 	if actor.PreferredUsername != "main" {
 		redirect = actor.PreferredUsername
 	}

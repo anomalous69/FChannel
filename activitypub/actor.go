@@ -1485,3 +1485,15 @@ func (actor Actor) GetBoardType() string {
 
 	return boardtype
 }
+
+const (
+	OptionID        = 1 << 0 // 1
+	OptionFlag      = 1 << 1 // 2
+	OptionTripcode  = 1 << 2 // 4
+	OptionAnonymous = 1 << 3 // 8
+)
+
+// HasOption returns true if the actor's OptionsMask contains the given option bit(s)
+func (a *Actor) HasOption(option int) bool {
+	return a.OptionsMask&option != 0
+}

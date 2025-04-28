@@ -87,6 +87,7 @@ func main() {
 	app.Post("/"+config.Key+"/:actor/addjanny", routes.AdminAddJanny)
 	app.Post("/"+config.Key+"/:actor/editsummary", routes.AdminEditSummary)
 	app.Post("/"+config.Key+"/:actor/setboardtype", routes.AdminSetBoardType)
+	app.Post("/"+config.Key+"/:actor/setboardoptions", routes.AdminSetBoardOptions)
 	app.Get("/"+config.Key+"/:actor/deletejanny", routes.AdminDeleteJanny)
 	app.All("/"+config.Key+"/:actor/follow", routes.AdminFollow)
 	app.Get("/"+config.Key+"/:actor", routes.AdminActorIndex)

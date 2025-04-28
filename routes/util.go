@@ -109,11 +109,19 @@ func ParseOutboxRequest(ctx *fiber.Ctx, actor activitypub.Actor) error {
 				nObj.Sensitive = true
 			}
 
-			if actor.PreferredUsername == "int" || actor.PreferredUsername == "bint" {
+			if actor.HasOption(activitypub.OptionAnonymous) {
+				nObj.AttributedTo = ""
+			}
+
+			if !actor.HasOption(activitypub.OptionTripcode) && nObj.TripCode != "#Admin" && nObj.TripCode != "#Moderator" && nObj.TripCode != "#Janitor" && nObj.TripCode != "##" {
+				nObj.TripCode = ""
+			}
+
+			if actor.HasOption(activitypub.OptionFlag) {
 				nObj.Alias = "cc:" + util.GetCC(ctx.Get("PosterIP"))
 			}
 
-			if actor.PreferredUsername == "bint" {
+			if actor.HasOption(activitypub.OptionID | activitypub.OptionFlag) {
 				//TODO: better way to pass IP to
 				if ctx.Get("PosterIP") == "172.16.0.1" || util.IsTorExit(ctx.Get("PosterIP")) {
 					nObj.Alias = nObj.Alias + "id:HiddenID"
@@ -259,12 +267,19 @@ func ParseOutboxRequest(ctx *fiber.Ctx, actor activitypub.Actor) error {
 			case "New":
 				name := activity.Object.Alias
 				prefname := activity.Object.Name
-				config.Log.Println(name)
 				summary := activity.Object.Summary
 				restricted := activity.Object.Sensitive
 				boardtype := activity.Object.MediaType // Didn't want to add new struct field, close enough
+				boardoptionmask := 0                   // Ditto
+				if len(activity.Object.Option) > 0 {
+					var err error
+					boardoptionmask, err = strconv.Atoi(activity.Object.Option[0])
+					if err != nil {
+						boardoptionmask = 0
+					}
+				}
 
-				actor, err := db.CreateNewBoard(*activitypub.CreateNewActor(prefname, name, summary, config.AuthReq, restricted, boardtype))
+				actor, err := db.CreateNewBoard(*activitypub.CreateNewActor(prefname, name, summary, config.AuthReq, restricted, boardtype, boardoptionmask))
 				if err != nil {
 					return util.MakeError(err, "ParseOutboxRequest")
 				}
@@ -603,6 +618,22 @@ func TemplateFunctions(engine *html.Engine) {
 		switch contentType {
 		case "image/png", "image/jpeg":
 			return true
+		default:
+			return false
+		}
+	})
+
+	// Add HasBoardOption for templates
+	engine.AddFunc("HasBoardOption", func(actor interface{}, option int) bool {
+		if actor == nil {
+			return false
+		}
+		// Accept both *activitypub.Actor and activitypub.Actor
+		switch a := actor.(type) {
+		case *activitypub.Actor:
+			return a != nil && a.HasOption(option)
+		case activitypub.Actor:
+			return (&a).HasOption(option)
 		default:
 			return false
 		}

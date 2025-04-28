@@ -45,6 +45,7 @@ type Board struct {
 	Restricted  bool
 	Post        ObjectBase
 	BoardType   string
+	OptionsMask int
 }
 type BoardSortAsc []Board
 

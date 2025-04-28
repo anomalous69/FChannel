@@ -70,6 +70,10 @@ func CreateNameTripCode(ctx *fiber.Ctx) (string, string, error) {
 			}
 		}
 
+		if chunck == "" {
+			return tripSecure.ReplaceAllString(input, ""), "", nil
+		}
+
 		hash, err := TripCodeSecure(chunck)
 
 		return tripSecure.ReplaceAllString(input, ""), "!!" + hash, MakeError(err, "CreateNameTripCode")
