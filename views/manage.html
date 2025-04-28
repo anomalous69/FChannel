@@ -100,12 +100,11 @@
     <input type="submit" value="Set board type">
   </form>
   <form id="boardoptions-form" action="/{{ .page.Key }}/{{ .page.Board.PrefName }}/setboardoptions" method="post" enctype="application/x-www-form-urlencoded" style="margin-top: 10px;">
-    <label>Board Options:</label><br>
+    <label>Board Options:</label>
     <label><input type="checkbox" name="option_id" value="1" {{if HasBoardOption .page.Board.Actor 1}}checked{{end}}> IDs</label>
     <label><input type="checkbox" name="option_flag" value="1" {{if HasBoardOption .page.Board.Actor 2}}checked{{end}}> Flags</label>
     <label><input type="checkbox" name="option_tripcode" value="1" {{if HasBoardOption .page.Board.Actor 4}}checked{{end}}> Tripcodes</label>
-    <label><input type="checkbox" name="option_anon" value="1" {{if HasBoardOption .page.Board.Actor 8}}checked{{end}}> Anonymous</label>
-    <br>
+    <label><input type="checkbox" name="option_anon" value="1" {{if HasBoardOption .page.Board.Actor 8}}checked{{end}}> Anonymous</label>&nbsp;
     <input type="submit" value="Set board options"><br>
   </form>
   <ul style="display: inline-block; padding: 0; margin: 0; list-style-type: none;">

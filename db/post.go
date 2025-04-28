@@ -566,7 +566,7 @@ func ParseLinkComments(board activitypub.Actor, op string, content string, threa
 		if replyID, isReply, err := IsReplyToOP(op, parsedLink); err == nil && isReply || err == nil && parsedLink == op {
 			id := util.ShortURL(board.Outbox, replyID)
 
-			content = strings.Replace(content, match[i][0], "<a class=\"reply\" title=\""+quoteTitle+"\" href=\"/"+board.Name+"/"+util.ShortURL(board.Outbox, op)+"#"+id+"\">&gt;&gt;"+id+""+isOP+"</a>", -1)
+			content = strings.Replace(content, match[i][0], "<a class=\"reply\" title=\""+quoteTitle+"\" href=\"/"+board.PreferredUsername+"/"+util.ShortURL(board.Outbox, op)+"#"+id+"\">&gt;&gt;"+id+""+isOP+"</a>", -1)
 		} else {
 			//this is a cross post
 
