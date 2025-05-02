@@ -236,7 +236,7 @@ func CreateNewCaptcha() error {
 
 	}
 
-	cmd := exec.Command("magick", "-size", "200x98", pattern, "-transparent", "white", file)
+	cmd := exec.Command(MagickBinary, "-size", "200x98", pattern, "-transparent", "white", file)
 	cmd.Stderr = os.Stderr
 
 	if err := cmd.Run(); err != nil {
@@ -244,9 +244,9 @@ func CreateNewCaptcha() error {
 	}
 
 	if len(config.CaptchaFont) > 0 {
-		cmd = exec.Command("magick", file, "-font", config.CaptchaFont, "-fill", "blue", "-pointsize", "62", "-annotate", "+0+70", captcha, "-tile", "pattern:left30", "-gravity", "center", "-transparent", "white", file)
+		cmd = exec.Command(MagickBinary, file, "-font", config.CaptchaFont, "-fill", "blue", "-pointsize", "62", "-annotate", "+0+70", captcha, "-tile", "pattern:left30", "-gravity", "center", "-transparent", "white", file)
 	} else {
-		cmd = exec.Command("magick", file, "-fill", "blue", "-pointsize", "62", "-annotate", "+0+70", captcha, "-tile", "pattern:left30", "-gravity", "center", "-transparent", "white", file)
+		cmd = exec.Command(MagickBinary, file, "-fill", "blue", "-pointsize", "62", "-annotate", "+0+70", captcha, "-tile", "pattern:left30", "-gravity", "center", "-transparent", "white", file)
 	}
 	cmd.Stderr = os.Stderr
 
@@ -255,7 +255,7 @@ func CreateNewCaptcha() error {
 	}
 
 	rnd = fmt.Sprintf("%d", rand.Intn(24)-12)
-	cmd = exec.Command("magick", file, "-rotate", rnd, "-wave", "5x35", "-distort", "Arc", "20", "-wave", "2x35", "-transparent", "white", file)
+	cmd = exec.Command(MagickBinary, file, "-rotate", rnd, "-wave", "5x35", "-distort", "Arc", "20", "-wave", "2x35", "-transparent", "white", file)
 	cmd.Stderr = os.Stderr
 
 	if err := cmd.Run(); err != nil {

@@ -127,9 +127,9 @@ func (obj ObjectBase) CreatePreview() *NestedObjectBase {
 	var cmd *exec.Cmd
 	switch obj.MediaType {
 	case "image/gif":
-		cmd = exec.Command("magick", "."+objFile, "-coalesce", "-scale", "250x250>", "+dither", "-remap", "."+objFile+"[0]", "-layers", "Optimize", "-strip", "."+href)
+		cmd = exec.Command(util.MagickBinary, "."+objFile, "-coalesce", "-scale", "250x250>", "+dither", "-remap", "."+objFile+"[0]", "-layers", "Optimize", "-strip", "."+href)
 	default:
-		cmd = exec.Command("magick", "."+objFile, "-resize", "250x250>", "-strip", "."+href)
+		cmd = exec.Command(util.MagickBinary, "."+objFile, "-resize", "250x250>", "-strip", "."+href)
 	}
 
 	if err := cmd.Run(); err != nil {
