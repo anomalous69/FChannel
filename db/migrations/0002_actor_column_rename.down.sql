@@ -1,4 +1,4 @@
--- Rollback for 0003_actor_column_rename.up.sql
+-- Rollback for 0002_actor_column_rename.up.sql
 DO $$
 BEGIN
     IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='actor' AND column_name='name') THEN
