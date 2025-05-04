@@ -147,7 +147,7 @@ func ParseOutboxRequest(ctx *fiber.Ctx, actor activitypub.Actor) error {
 				return Send500(ctx, "Failed to post", util.MakeError(err, "ParseOutboxRequest"))
 			}
 
-			if len(nObj.To) == 0 && actor.PreferredUsername != "overboard" {
+			if len(nObj.To) == 0 {
 				if err := actor.ArchivePosts(); err != nil {
 					return Send500(ctx, "Failed to post", util.MakeError(err, "ParseOutboxRequest"))
 				}

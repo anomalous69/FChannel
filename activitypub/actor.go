@@ -73,7 +73,10 @@ accepting your posts from your board from this site. Good luck ;)`)
 }
 
 func (actor Actor) ArchivePosts() error {
-	if actor.Id != "" && actor.Id != config.Domain {
+	// TODO: Check for "meta" flag instead of hardcoded overboard when implemented
+	// We don't want to archive posts from overboard or main as this will push
+	// a bunch of threads from the boards they are following into the archive
+	if actor.Id != "" && actor.Id != config.Domain && actor.PreferredUsername != "overboard" && actor.PreferredUsername != "main" {
 		col, err := actor.GetAllArchive(165)
 
 		if err != nil {
