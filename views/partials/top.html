@@ -8,7 +8,7 @@
   <p style="text-align: center;">{{ .Board.Summary }}</p>
   {{ $len := len .Posts }}
   {{ if eq $len 0 }}
-  {{ if and (eq .PostType "new") (ne .Board.PrefName "main") (ne .Board.PrefName "overboard") }}
+  {{ if and (eq .PostType "new") (ne .Board.PrefName "main") (not (HasBoardOption .Board.Actor 16)) }}
   <h3 id="newpostbtn"  state="0" style="display: none; margin-bottom:100px;">[<a href="javascript:startNewPost()">Start a New Thread</a>]</h3>
   {{ end }} <!-- end if inreplyto-->
   <div id="newpost">
@@ -86,7 +86,7 @@
   <h3 id="newpostbtn"  state="0" style="text-align: center; margin-top: 80px; display: none; margin-bottom:100px;">[<a href="javascript:startNewPost()">Post a Reply</a>]</h3>
   {{ end }}
   {{ else }}
-	{{ if and (ne .Board.PrefName "main") (ne .Board.PrefName "overboard")  }}
+	{{ if and (ne .Board.PrefName "main") (not (HasBoardOption .Board.Actor 16)) }}
   <h3 id="newpostbtn"  state="0" style="text-align: center; margin-top: 80px; display: none; margin-bottom:100px;">[<a href="javascript:startNewPost()">Start a New Thread</a>]</h3>
 	{{ end }}
   {{ end }} <!-- end if inreplyto-->

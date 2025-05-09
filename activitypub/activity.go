@@ -364,7 +364,7 @@ func (activity Activity) MakeRequestInbox() error {
 
 			preferedusername, instance := GetActorAndInstance(actor.Id)
 
-			if preferedusername != "main" && preferedusername != "overboard" {
+			if preferedusername != "main" && !actor.HasOption(OptionReadOnly) {
 				go func(actor Actor, activity Activity) error {
 					var status int
 					var try int

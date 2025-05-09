@@ -1,2 +1,4 @@
+{{define "extboards"}}
 <li>[<a href="https://dis.usagi.reisen/lounge">lounge</a></li>
 <li> / <a href="https://dis.usagi.reisen/prog">prog</a>]</li>
+{{end}}

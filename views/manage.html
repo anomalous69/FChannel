@@ -101,10 +101,11 @@
   </form>
   <form id="boardoptions-form" action="/{{ .page.Key }}/{{ .page.Board.PrefName }}/setboardoptions" method="post" enctype="application/x-www-form-urlencoded" style="margin-top: 10px;">
     <label>Board Options:</label>
-    <label><input type="checkbox" name="option_id" value="1" {{if HasBoardOption .page.Board.Actor 1}}checked{{end}}> IDs</label>
-    <label><input type="checkbox" name="option_flag" value="1" {{if HasBoardOption .page.Board.Actor 2}}checked{{end}}> Flags</label>
-    <label><input type="checkbox" name="option_tripcode" value="1" {{if HasBoardOption .page.Board.Actor 4}}checked{{end}}> Tripcodes</label>
-    <label><input type="checkbox" name="option_anon" value="1" {{if HasBoardOption .page.Board.Actor 8}}checked{{end}}> Anonymous</label>&nbsp;
+    <label title="Display unique IDs for each poster in a thread"><input type="checkbox" name="option_id" value="1" {{if HasBoardOption .page.Board.Actor 1}}checked{{end}}> IDs</label>
+    <label title="Display posters country next to their name"><input type="checkbox" name="option_flag" value="1" {{if HasBoardOption .page.Board.Actor 2}}checked{{end}}> Flags</label>
+    <label title="Allow posters to use tripcodes&#013;Staff can still use Admin/Mod tripcodes with this disabled"><input type="checkbox" name="option_tripcode" value="1" {{if HasBoardOption .page.Board.Actor 4}}checked{{end}}> Tripcodes</label>
+    <label title="Force all poster names to be &quot;Anonymous&quot;"><input type="checkbox" name="option_anon" value="1" {{if HasBoardOption .page.Board.Actor 8}}checked{{end}}> Anonymous</label>
+    <label title="Disables posting and federation&#013;Intended for an overboard/all board that can only display threads from other boards"><input type="checkbox" name="option_readonly" value="1" {{if HasBoardOption .page.Board.Actor 16}}checked{{end}}> Read Only</label>&nbsp;
     <input type="submit" value="Set board options"><br>
   </form>
   <ul style="display: inline-block; padding: 0; margin: 0; list-style-type: none;">

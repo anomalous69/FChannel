@@ -20,7 +20,7 @@ import (
 
 func ActorInbox(ctx *fiber.Ctx) error {
 	actor, _ := activitypub.GetActorFromDB(config.Domain + "/" + ctx.Params("actor"))
-	if actor.PreferredUsername == "overboard" {
+	if actor.HasOption(activitypub.OptionReadOnly) {
 		return ctx.SendStatus(404)
 	}
 
@@ -220,6 +220,11 @@ func MakeActorPost(ctx *fiber.Ctx) error {
 
 	// Missing attachment on non-textboard
 	actor, _ := activitypub.GetActorByNameFromDB(ctx.FormValue("boardName"))
+
+	if len(ctx.FormValue("inReplyTo")) == 0 && actor.HasOption(activitypub.OptionReadOnly) {
+		return Send403(ctx, "Cannot make new thread, board is read-only")
+	}
+
 	if len(ctx.FormValue("inReplyTo")) == 0 && header == nil && actor.BoardType != "text" {
 		return Send400(ctx, "File is required for new threads")
 	}
@@ -363,21 +368,23 @@ func MakeActorPost(ctx *fiber.Ctx) error {
 
 	if len(ctx.FormValue("inReplyTo")) > 0 {
 		re := regexp.MustCompile(`.+\/`)
-		actorid := strings.TrimSuffix(re.FindString(ctx.FormValue("inReplyTo")), "/")
-		actor, err := activitypub.GetActor(actorid)
-		// Reject replies with media when the OP from a textboard
-		if actor.BoardType == "text" && header != nil {
-			return Send400(ctx, "The thread you are replying to is from a text-only board, file attachments are not allowed")
+		replyactorid := strings.TrimSuffix(re.FindString(ctx.FormValue("inReplyTo")), "/")
+		replyactor, err := activitypub.GetActor(replyactorid)
+		// Reject replies with files when the OP is from a textboard
+		if replyactor.BoardType == "text" && header != nil {
+			return Send400(ctx, "The thread you are replying to is from a text-only board, attachments are not allowed")
 		}
 		if err == nil {
-			local, _ := actor.IsLocal()
+			local, _ := replyactor.IsLocal()
 			if local {
-				sendTo = actor.Outbox
+				sendTo = replyactor.Outbox
 			}
 		} else {
-			query := `select id from following where following = $1 AND following != $2 LIMIT 1;`
-			if err := config.DB.QueryRow(query, actorid, config.Domain+"/overboard").Scan(&actorid); err == nil {
-				if actor, err := activitypub.GetActor(actorid); err == nil {
+			query := `select id from following where following = $1 AND following IN (
+    SELECT id FROM actor WHERE (optionsmask & $2) = 0
+) LIMIT 1;`
+			if err := config.DB.QueryRow(query, replyactorid, activitypub.OptionReadOnly).Scan(&replyactorid); err == nil {
+				if actor, err := activitypub.GetActor(replyactorid); err == nil {
 					sendTo = actor.Outbox
 				}
 			}
@@ -635,7 +642,7 @@ func ActorPosts(ctx *fiber.Ctx) error {
 	var pages []int
 	pageLimit := (float64(collection.TotalItems) / float64(offset))
 
-	if pageLimit > 11 && actor.PreferredUsername != "overboard" {
+	if pageLimit > 11 && !actor.HasOption(activitypub.OptionReadOnly) {
 		pageLimit = 11
 	}
 

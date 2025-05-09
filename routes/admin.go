@@ -15,6 +15,27 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
+// calculateBoardOptionsMask builds an options mask from form values
+func calculateBoardOptionsMask(ctx *fiber.Ctx) int {
+	optionsMask := 0
+	if ctx.FormValue("option_id") == "1" {
+		optionsMask |= activitypub.OptionID
+	}
+	if ctx.FormValue("option_flag") == "1" {
+		optionsMask |= activitypub.OptionFlag
+	}
+	if ctx.FormValue("option_tripcode") == "1" {
+		optionsMask |= activitypub.OptionTripcode
+	}
+	if ctx.FormValue("option_anon") == "1" {
+		optionsMask |= activitypub.OptionAnonymous
+	}
+	if ctx.FormValue("option_readonly") == "1" {
+		optionsMask |= activitypub.OptionReadOnly
+	}
+	return optionsMask
+}
+
 func AdminVerify(ctx *fiber.Ctx) error {
 	identifier := ctx.FormValue("id")
 	code := ctx.FormValue("code")
@@ -179,21 +200,7 @@ func AdminAddBoard(ctx *fiber.Ctx) error {
 		return Send400(ctx, "Board type \""+board.BoardType+"\" is invalid")
 	}
 
-	// Calculate OptionsMask from form checkboxes
-	var optionsMask int
-	if ctx.FormValue("option_id") == "1" {
-		optionsMask |= activitypub.OptionID
-	}
-	if ctx.FormValue("option_flag") == "1" {
-		optionsMask |= activitypub.OptionFlag
-	}
-	if ctx.FormValue("option_tripcode") == "1" {
-		optionsMask |= activitypub.OptionTripcode
-	}
-	if ctx.FormValue("option_anon") == "1" {
-		optionsMask |= activitypub.OptionAnonymous
-	}
-	board.OptionsMask = optionsMask
+	board.OptionsMask = calculateBoardOptionsMask(ctx)
 
 	newActorActivity.AtContext.Context = "https://www.w3.org/ns/activitystreams"
 	newActorActivity.Type = "New"
@@ -447,20 +454,7 @@ func AdminSetBoardOptions(ctx *fiber.Ctx) error {
 		return util.MakeError(errors.New("Error"), "AdminSetBoardOptions")
 	}
 
-	// Build the new options mask from the form
-	optionsMask := 0
-	if ctx.FormValue("option_id") == "1" {
-		optionsMask |= activitypub.OptionID
-	}
-	if ctx.FormValue("option_flag") == "1" {
-		optionsMask |= activitypub.OptionFlag
-	}
-	if ctx.FormValue("option_tripcode") == "1" {
-		optionsMask |= activitypub.OptionTripcode
-	}
-	if ctx.FormValue("option_anon") == "1" {
-		optionsMask |= activitypub.OptionAnonymous
-	}
+	optionsMask := calculateBoardOptionsMask(ctx)
 
 	query := `update actor set optionsmask=$1 where id=$2`
 	if _, err := config.DB.Exec(query, optionsMask, actor.Id); err != nil {

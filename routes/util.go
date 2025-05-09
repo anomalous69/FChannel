@@ -98,7 +98,7 @@ func ParseOutboxRequest(ctx *fiber.Ctx, actor activitypub.Actor) error {
 			op := len(nObj.InReplyTo) - 1
 			if op >= 0 {
 				if nObj.InReplyTo[op].Id == "" {
-					if actor.PreferredUsername == "overboard" {
+					if actor.HasOption(activitypub.OptionReadOnly) {
 						return ctx.SendStatus(400)
 					}
 				}
@@ -181,7 +181,7 @@ func ParseOutboxRequest(ctx *fiber.Ctx, actor activitypub.Actor) error {
 			//op := len(nObj.InReplyTo) - 1
 			if op >= 0 {
 				if nObj.InReplyTo[op].Id == "" {
-					if actor.PreferredUsername == "overboard" {
+					if actor.HasOption(activitypub.OptionReadOnly) {
 						return ctx.SendStatus(400)
 					}
 					id = nObj.Id

@@ -48,8 +48,7 @@ and to fix errors reported by `go vet` and make your code better with
 - Start the server with `./fchan`.
 
 ### Customization
-Extra links to external boards, websites, etc... can be appended to the board navigation header by modifying [views/partials/extboards.html](views/partials/extboards.html).  
-[Example with two external boards](views/partials/extboards.html.example) 
+Extra links to external boards, websites, etc... can be appended to the board navigation header by copying [views/partials/extboards.html.example](views/partials/extboards.html.example) to views/partials/extboards.html.
 
 ### Local testing
 

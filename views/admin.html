@@ -13,15 +13,18 @@
       <option value="text">Text</option>
       <option value="flash">Flash</option>
     </select>
-    <label><input type="checkbox" name="option_id" value="1"> IDs</label>
-    <label><input type="checkbox" name="option_flag" value="1"> Flags</label>
-    <label><input type="checkbox" name="option_tripcode" value="1" checked> Tripcodes</label>
-    <label><input type="checkbox" name="option_anon" value="1"> Anonymous</label><br>
+    <br>
     <label>Restricted (i.e SFW):</label><br>
     <select name="restricted">
       <option value="True">True</option>
       <option value="False">False</option>
     </select>
+    <br>
+    <label title="Display unique IDs for each poster in a thread"><input type="checkbox" name="option_id" value="1"> IDs</label>
+    <label title="Display posters country next to their name"><input type="checkbox" name="option_flag" value="1"> Flags</label>
+    <label title="Allow posters to use tripcodes&#013;Staff can still use Admin/Mod tripcodes with this disabled"><input type="checkbox" name="option_tripcode" value="1" checked> Tripcodes</label>
+    <label title="Force all poster names to be &quot;Anonymous&quot;"><input type="checkbox" name="option_anon" value="1"> Anonymous</label>
+    <label title="Disables posting and federation&#013;Intended for an overboard/all board that can only display threads from other boards"><input type="checkbox" name="option_readonly" value="1"> Read Only</label>&nbsp;
   </form>
   <ul style="display: inline-block; padding: 0;">
     <li style="display: inline-block;">[<a href="#reported">Reported</a>]</li>

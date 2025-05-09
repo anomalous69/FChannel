@@ -163,7 +163,7 @@ func GetBoardFeed(ctx *fiber.Ctx) error {
 	var rows *sql.Rows
 	var query string
 
-	if actor.PreferredUsername == "overboard" {
+	if actor.HasOption(activitypub.OptionReadOnly) {
 		query = `select x.id, x.name, x.content, x.published, x.attributedto, x.attachment, x.preview, x.actor, x.tripcode, x.sensitive from (select id, name, content, published, 
 		attributedto, attachment, preview, actor, tripcode, sensitive from activitystream where actor in (select following from following where id in (select id from following where id=$1)) and type='Note' union select id, name, content, published, 
 		attributedto, attachment, preview, actor, tripcode, sensitive from cacheactivitystream where actor in (select following from following where id in (select id from follower where id=$1))

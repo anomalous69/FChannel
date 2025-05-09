@@ -73,10 +73,9 @@ accepting your posts from your board from this site. Good luck ;)`)
 }
 
 func (actor Actor) ArchivePosts() error {
-	// TODO: Check for "meta" flag instead of hardcoded overboard when implemented
-	// We don't want to archive posts from overboard or main as this will push
-	// a bunch of threads from the boards they are following into the archive
-	if actor.Id != "" && actor.Id != config.Domain && actor.PreferredUsername != "overboard" && actor.PreferredUsername != "main" {
+	// We don't want to archive posts from main or read only "meta" actors
+	//  as this will push a bunch of threads from the boards they are following into the archive
+	if actor.Id != "" && actor.Id != config.Domain && actor.PreferredUsername != "main" && !actor.HasOption(OptionReadOnly) {
 		col, err := actor.GetAllArchive(165)
 
 		if err != nil {
@@ -1158,7 +1157,7 @@ func (actor Actor) WantToServePage(page int) (Collection, error) {
 	var collection Collection
 	var err error
 
-	if page > config.PostCountPerPage && actor.PreferredUsername != "overboard" {
+	if page > config.PostCountPerPage && !actor.HasOption(OptionReadOnly) {
 		return collection, errors.New("above page limit")
 	}
 
@@ -1494,6 +1493,7 @@ const (
 	OptionFlag      = 1 << 1 // 2
 	OptionTripcode  = 1 << 2 // 4
 	OptionAnonymous = 1 << 3 // 8
+	OptionReadOnly  = 1 << 4 // 16
 )
 
 // HasOption returns true if the actor's OptionsMask contains the given option bit(s)
