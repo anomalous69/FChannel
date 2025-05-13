@@ -5,9 +5,8 @@ import (
 	"regexp"
 	"strings"
 
-	"os/exec"
-
 	"github.com/anomalous69/fchannel/config"
+	"github.com/anomalous69/fchannel/util/tripphrase"
 	"github.com/gofiber/fiber/v2"
 	_ "github.com/jackc/pgx/v5/stdlib"
 	"github.com/simia-tech/crypt"
@@ -155,11 +154,10 @@ func TripCodeSecure(pass string) (string, error) {
 
 func TripPhrase(pass string) (string, error) {
 	pass = TripCodeConvert(pass)
-	//User input in os.exec :(
-	phrase, err := exec.Command("perl", "util/tripphrase/tripphrase.pl", config.Salt+pass).Output()
+	phrase, err := tripphrase.GeneratePhrase(pass)
 	if err != nil {
 		return "", MakeError(err, "TripPhrase")
 	}
 
-	return string(phrase), nil
+	return phrase, nil
 }
