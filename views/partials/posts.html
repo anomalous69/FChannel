@@ -10,7 +10,7 @@
 <div style="overflow: auto;">
   <div id="{{ shortURL $board.Actor.Outbox .Id }}" style="overflow: visible; margin-bottom: 12px;">
     {{ if .Attachment }}
-		<span id="{{ .Id }}-fileinfo" style="display: block;">File: <a id="{{ .Id }}-img" href="{{ proxy (index .Attachment 0).Href}}" download="{{ (index .Attachment 0).Name  }}">{{ shortImg (index .Attachment 0).Name  }}</a><span id="{{ .Id }}-size"> ({{ convertSize (index .Attachment 0).Size  }})</span>    {{ if or (eq (index .Attachment 0).MediaType "application/x-shockwave-flash") (eq (index .Attachment 0).MediaType "video/x-flv") }}
+		<span id="{{ .Id }}-fileinfo" style="display: block;">File: <a id="{{ .Id }}-img" href="{{ proxy (index .Attachment 0).Href}}" download="{{ (index .Attachment 0).Name  }}">{{ shortImg (index .Attachment 0).Name  }}</a><span id="{{ .Id }}-size"> ({{ convertSize (index .Attachment 0).Size  }})</span>    {{ if eq (index .Attachment 0).MediaType "application/x-shockwave-flash" }}
     [<a href="#" onclick="swfpopup(this, 'image')">Embed</a>]
     {{ end }}{{ if eq .Locked false }} {{ if eq .Type "Note" }} {{ if (index .Attachment 0).MediaType | tegakiSupportsImage }}[<a href="javascript:quote('{{ $board.Actor.Id }}', '{{ $opId }}', '{{ .Id }}')" onclick="EditImage(this.previousElementSibling.previousElementSibling.href)">Draw</a>]{{ end }}{{ end }} {{ end }}</span>
     <div id="hide-{{ .Id }}" style="display: none;">[Hide]</div>

@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link rel="stylesheet" href="/static/css/common.css">
+    <link rel="stylesheet" href="/static/css/themes/default.css">
+  </head>
+  <body class="nsfw" style="background-color:#ffffee; max-width: 800px; margin: 0 auto;font-size:14px;">
+    [<a href="javascript:history.back()">Back</a>]
+    <h1 style="text-align: center;">FAQ</h1>
+    <div>
+      <h4>What is FChannel?</h4>
+      <p>FChannel is a federated image board based on <a href="https://activitypub.rocks/">ActivityPub</a>, a protocol which allows social sites like social media and image boards to be decentralized. Boards across sites which are on the opposite sides of the Globe can be connected and feeds can be shared or followed. It pulls likeness from other chans for ease of familiarity and use.</p><p> You can get the source code on <a href="https://github.com/anomalous69/FChannel">https://github.com/anomalous69/FChannel</a> which is available under <a href="https://en.wikipedia.org/wiki/Affero_General_Public_License">AGPLv3</a>, which means that you can modify the source code of fchan however you like as long as you share your source code with everyone else. We appreciate and encourage any positive contributions to the source code!</p>
+
+      <h4 id="options">What are the "Options" used for when posting?</h4>
+      <p>The "Options" field can be used for special options when posting.</p>
+      <ul>
+        <li>Type <span style="font-weight: bold;">"noko"</span> in the options field if you want to stay on the thread you are about to post on.</li>
+        <li>Type <span style="font-weight: bold;">"sage"</span> to not bump the thread, meaning that if will not show up on the front page of the board, that you are replying to.</li>
+        <li>Typing in <span style="font-weight: bold;">"nokosage"</span> will do both actions as described above.</li>
+        <li>Enter an email address to have it display on your name like so: <a href="mailto:nobody@no.where" class="userEmail"><span class="name"><b>Anonymous</b></span></a></li>
+      </ul>
+      <h4 id="tripcode">What is a "tripcode"?</h4>
+      <p>A tripcode is a way to uniquely identify yourself on an imageboard. This is the closest you will get to registering. There are three kinds of tripcodes that can identify yourself with, however, it's recommended that you use secure tripcodes only if you take your identification number seriously.</p>
+      <ul>
+        <li><span style="font-weight: bold;">Secure tripcode:</span> Type in your name in the "Name" field, and then a double hash mark (##) which is followed by a password. So for example, typing in <span style="font-weight: bold;">moot##faggot</span> in the "Name" field will result in <span style="color:#117743"><span style="font-weight: bold;">moot</span> !!IefQUZVu/1</span></li>
+        <li><span style="font-weight: bold;">Regular tripcode:</span> Type in your name in the "Name" field, and then a hash mark (#) which is followed by a password. So for example, typing in <span style="font-weight: bold;">moot#faggot</span> in the "Name" field will result in <span style="color:#117743"><span style="font-weight: bold;">moot</span> !Ep8pui8Vw2</span></li>
+        <li><span style="font-weight: bold;">Tripphrase:</span> Type in your name in the "Name" field, and then a triple hash mark (###) which is followed by a password. So for example, typing in <span style="font-weight: bold;">moot#faggot</span> in the "Name" field will result in <span style="color:#117743"><span style="font-weight: bold;">moot</span> (dully erode my cocytus)</span></li>
+      </ul></p>
+
+      <h4 id="quote">How do I quote?</h4>
+      <p>Use the greater-than symbol (>) to quote strings of text. Use double (>>) followed by the post ID or URL id of the post you are referencing or click on the unique ID of the post (for example, FIDV40Q2) if you want to reference a post (keep in mind that this will be changed later for better use).</p>
+
+      <h4 id="link">How do I view an entire thread?</h4>
+      <p>Click the "No." or [Reply] button next to the post to view its thread.</p>
+
+      <h4 id="upload">What kind of files can I upload?</h4>
+      <p>The maximum file size is 7 MiB (mebibyte). The supported file types are:</p>
+      <ul>
+        <li>.GIF: "image/gif"</li>
+        <li>.PNG, (animated) .PNG: "image/png", "image/apng"</li>
+        <li>.JPG: "image/jpeg"</li>
+				<li>.JXL: "image/jxl"</li>
+        <li>.WEBP: "image/webp"</li>
+				<li>.AVIF: "image/avif"</li>
+        <li>.MP4: "image/mp4"</li>
+        <li>.WEBM: "image/webm"</li>
+        <li>.OGG: "image/ogg"</li>
+        <li>.MP2, .MP3: "audio/mpeg"</li>
+        <li>.WAV: "audio/wav", "audio/wave", "audio/x-wav"</li>
+				<li>.SWF: "application/x-shockwave-flash"</li>
+      </ul>
+
+      <h4 id="howdelete">How do I delete my posts or files?</h4>
+      <p>Posts and files can be deleted by selecting the checkboxes on each post, and entering the post password in the delete post form at the bottom of the page.
+        If JavaScript is enabled then a random password will be generated on first visit, and the stored password will autofill in all relevant fields.</p>
+
+      <h4 id="cantdelete">Why can't I delete my post or file?</h4>
+      <p>Posts/files cannot be deleted earlier than 1 minute after posting, and later than 30 minutes.
+      You cannot delete the file attached to the thread OP.</p>
+
+      <h4 id="javascript">Why use JavaScript?</h4>
+      <p>JavaScript is used to improve the usage of the site and add features when it is not possible to do so using just HTML and CSS; however, it is not required for most of the site.</p>
+      <p>If possible and feasible, features are implemented with just HTML and CSS; JavaScript may also be used to improve features, either to extend the HTML/CSS implementation or as an alternative when the experience using JavaScript is better.</p>
+      <p><b>Some of the features that JavaScript is used for are:</b></p>
+      <ul>
+        <li>Quick reply popup</li>
+        <li>Quoting post by clicking on ID</li>
+        <li>Expanding images</li>
+        <li>Embedding linked Youtube/Soundcloud/NicoNicoDouga media in posts</li>
+        <li>SWF File embedding and playback (using ruffle)</li>
+      </ul>
+
+      <h4 id="seqnum">Why do the posts not have sequential ID numbers?</h4>
+      <p>Sequential ID numbers have run their course, random base36 is better.</p>
+
+      <h4 id="pubexamp">ActivityPub specific examples</h4>
+      <p>Soon&trade;.</p>
+    </div>
+    <div style="width: 500px; margin:0 auto; margin-top: 50px; text-align: center;">
+      [<a href="/">Home</a>][<a href="/static/rules.html">Rules</a>][<a href="/static/faq.html">FAQ</a>]
+      <p>All trademarks and copyrights on this page are owned by their respective parties.</p>
+    </div>
+  </body>
+</html>

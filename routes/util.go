@@ -81,8 +81,8 @@ func ParseOutboxRequest(ctx *fiber.Ctx, actor activitypub.Actor) error {
 				}
 
 				contentType, _ := util.GetFileContentType(f)
-				if actor.Type == "flash" && len(util.EscapeString(ctx.FormValue("inReplyTo"))) == 0 && (contentType != "application/x-shockwave-flash" && contentType != "video/x-flv") {
-					return Send400(ctx, "New threads on this board must have a SWF or Flash Video file")
+				if actor.Type == "flash" && len(util.EscapeString(ctx.FormValue("inReplyTo"))) == 0 && contentType != "application/x-shockwave-flash" {
+					return Send400(ctx, "New threads on this board must have a SWF file")
 				}
 
 				if !util.SupportedMIMEType(contentType) {

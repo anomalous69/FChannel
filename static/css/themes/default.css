@@ -29,6 +29,10 @@ h1 {
 
 body {
   background-color: #eef2fe;
+  background-image:         linear-gradient(top, #d1d5ee 0%, #eef2fe 200px); /* W3C */
+  background-image:    -moz-linear-gradient(top, #d1d5ee 0%, #eef2fe 200px); /* FF3.6+ */
+  background-image: -webkit-linear-gradient(top, #d1d5ee 0%, #eef2fe 200px); /* Chrome10+,Safari5.1+ */
+  background-repeat:no-repeat;
   color: black;
   font-family: arial, helvetica, sans-serif;
   font-size: 10pt
@@ -36,6 +40,10 @@ body {
 
 body.nsfw {
   background-color: #ffffee;
+  background-image:         linear-gradient(top, #fed6af 0%, #ffffee 200px); /* W3C */
+  background-image:    -moz-linear-gradient(top, #fed6af 0%, #ffffee 200px); /* FF3.6+ */
+  background-image: -webkit-linear-gradient(top, #fed6af 0%, #ffffee 200px); /* Chrome10+,Safari5.1+ */
+  background-repeat:no-repeat;
   color: #820404
 }
 

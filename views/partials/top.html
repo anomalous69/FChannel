@@ -45,7 +45,7 @@
           {{ if ne $threadType "text" }}
           <tr>
             <td><label for="file">File:</label></td>
-            <td><b id="form-drawlabel" style="display: none;">Drawing</b><input type="file" accept=".gif,.png,.apng,.jpg,.jpeg,.jxl,.webp,.avif,.mp4,.webm,.ogg,.mp2,.mp3,.mpa,.wav,.wave,.swf,.flv" id="file" name="file" {{ if gt $len 1 }} required {{ else }} {{ if eq $len 0 }} required {{ end }} {{ end }} >
+            <td><b id="form-drawlabel" style="display: none;">Drawing</b><input type="file" accept=".gif,.png,.apng,.jpg,.jpeg,.jxl,.webp,.avif,.mp4,.webm,.ogg,.mp2,.mp3,.mpa,.wav,.wave,.swf" id="file" name="file" {{ if gt $len 1 }} required {{ else }} {{ if eq $len 0 }} required {{ end }} {{ end }} >
 								<span style="float: right;">({{maxFileSize}} max)</span>
                 <br><input type="checkbox" name="sensitive">Mark sensitive</td>
 			          </tr>
@@ -124,7 +124,7 @@
           {{ if ne $threadType "text" }}
           <tr>
             <td><label for="file">File:</label></td>
-            <td><b id="form-drawlabel" style="display: none;">Drawing</b><input type="file" accept=".gif,.png,.apng,.jpg,.jpeg,.jxl,.webp,.avif,.mp4,.webm,.ogg,.mp2,.mp3,.mpa,.wav,.wave,.swf,.flv" id="file" name="file" {{ if gt $len 1 }} required {{ else }} {{ if eq $len 0 }} required {{ end }} {{ end }} >
+            <td><b id="form-drawlabel" style="display: none;">Drawing</b><input type="file" accept=".gif,.png,.apng,.jpg,.jpeg,.jxl,.webp,.avif,.mp4,.webm,.ogg,.mp2,.mp3,.mpa,.wav,.wave,.swf" id="file" name="file" {{ if gt $len 1 }} required {{ else }} {{ if eq $len 0 }} required {{ end }} {{ end }} >
 								<span style="float: right;">({{maxFileSize}} max)</span>
                 <br><input type="checkbox" name="sensitive">Mark sensitive</td>
 								</tr>

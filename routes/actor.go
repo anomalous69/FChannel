@@ -260,10 +260,10 @@ func MakeActorPost(ctx *fiber.Ctx) error {
 	if header != nil {
 		file, _ = header.Open()
 		contentType, _ := util.GetFileContentType(file)
-		// Only allow new threads on flash type boards with SWF or FLV files
-		if actor.BoardType == "flash" && len(util.EscapeString(ctx.FormValue("inReplyTo"))) == 0 && contentType != "application/x-shockwave-flash" && contentType != "video/x-flv" {
+		// Only allow new threads on flash type boards with SWF file
+		if actor.BoardType == "flash" && len(util.EscapeString(ctx.FormValue("inReplyTo"))) == 0 && contentType != "application/x-shockwave-flash" {
 			file.Close()
-			return Send400(ctx, "New threads on this board must have a SWF or Flash Video file")
+			return Send400(ctx, "New threads on this board must have a SWF file")
 		}
 	}
 

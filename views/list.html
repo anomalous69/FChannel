@@ -43,7 +43,7 @@
           {{ end }}
           <tr>
             <td><label for="file">File:</label></td>
-            <td><input type="file" accept='{{ if eq $board.BoardType "image" }}.gif,.png,.apng,.jpg,.jpeg,.jxl,.webp,.avif,.mp4,.webm,.ogg,.mp2,.mp3,.mpa,.wav,.wave,.swf,.flv{{ else if eq $board.BoardType "flash" }}.swf,.flv{{ end }}' id="file" name="file" required>
+            <td><input type="file" accept='{{ if eq $board.BoardType "image" }}.gif,.png,.apng,.jpg,.jpeg,.jxl,.webp,.avif,.mp4,.webm,.ogg,.mp2,.mp3,.mpa,.wav,.wave,.swf{{ else if eq $board.BoardType "flash" }}.swf{{ end }}' id="file" name="file" required>
 								<span style="float: right;">({{maxFileSize}} max)</span>
                 <br><input type="checkbox" name="sensitive">Mark sensitive</td>
          </tr>

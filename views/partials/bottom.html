@@ -14,7 +14,7 @@
     <textarea id="reply-comment" name="comment" maxlength="4500" oninput="sessionStorage.setItem('element-reply-comment', document.getElementById('reply-comment').value)"></textarea>
     {{ if ne $threadType "text" }}
 		<b style="display: none;" id="qr-drawlabel">Drawing</b>
-    <input id="reply-file" name="file" type="file" accept=".gif,.png,.apng,.jpg,.jpeg,.jxl,.webp,.avif,.mp4,.webm,.ogg,.mp2,.mp3,.mpa,.wav,.wave,.swf,.flv">
+    <input id="reply-file" name="file" type="file" accept=".gif,.png,.apng,.jpg,.jpeg,.jxl,.webp,.avif,.mp4,.webm,.ogg,.mp2,.mp3,.mpa,.wav,.wave,.swf">
 		<span>({{maxFileSize}} max)</span>
     {{ end }}
     <input id="reply-submit" type="submit" value="Reply" style="float: right;">
