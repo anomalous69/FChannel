@@ -1,7 +1,6 @@
 package db
 
 import (
-	"database/sql"
 	"fmt"
 	"html/template"
 	"image"
@@ -16,12 +15,16 @@ import (
 	"strings"
 	"time"
 
+	_ "golang.org/x/image/webp"
+
 	"github.com/anomalous69/fchannel/activitypub"
 	"github.com/anomalous69/fchannel/config"
 	"github.com/anomalous69/fchannel/util"
 	"github.com/gofiber/fiber/v2"
 
 	"github.com/corona10/goimagehash"
+	_ "github.com/gen2brain/avif"
+	_ "github.com/gen2brain/jpegxl"
 	"github.com/sourcegraph/syntaxhighlight"
 )
 
@@ -209,48 +212,73 @@ func GetCaptchaCode(captcha string) string {
 }
 
 func IsMediaBanned(f multipart.File) (bool, error) {
-	//TODO: Decoders for JPEG-XL and AVIF
-	//TODO: fall back to old hashing if any errors
-	mimetype, _ := util.GetFileContentType(f)
+	mimetype, err := util.GetFileContentType(f)
+	if err != nil {
+		// If we can't determine the MIME type then fall back to byte hashing
+		config.Log.Println("IsMediaBanned: Error getting file content type:", err)
+	}
+
 	switch mimetype {
-	case "image/jpeg", "image/png", "image/gif":
-		image, _, _ := image.Decode(f)
-		imagehash, _ := goimagehash.PerceptionHash(image)
-		var rows *sql.Rows
-		query := `select phash from bannedimages`
-		rows, err := config.DB.Query(query)
-		if err != nil && rows == nil {
+	case "image/jpeg", "image/png", "image/gif", "image/jxl", "image/avif", "image/webp":
+		image, _, err := image.Decode(f)
+		if err != nil {
+			// Fall back to byte hashing if image decode fails
+			config.Log.Println("IsMediaBanned: Error decoding image:", err)
 			break
 		}
-		if rows != nil {
-			defer rows.Close()
-			for rows.Next() {
-				var phash uint64
-				err := rows.Scan(&phash)
-				if err != nil {
-					break
-				}
 
-				current := goimagehash.NewImageHash(phash, 2)
-				distance, _ := current.Distance(imagehash)
-				if distance == 0 {
-					config.Log.Printf("phash (%d) similar to banned hash (%d)", imagehash.GetHash(), current.GetHash())
-					return true, nil
-				}
+		imagehash, err := goimagehash.PerceptionHash(image)
+		if err != nil {
+			// Fall back to old hashing method if perception hash fails
+			config.Log.Println("IsMediaBanned: Error creating perception hash:", err)
+			break
+		}
+
+		query := `select phash from bannedmedia where phash is not null`
+		rows, err := config.DB.Query(query)
+		if err != nil {
+			config.Log.Println("IsMediaBanned: Error querying banned media phashes:", err)
+			break
+		}
+		defer rows.Close()
+
+		for rows.Next() {
+			var phash uint64
+			if err := rows.Scan(&phash); err != nil {
+				config.Log.Println("IsMediaBanned: Error scanning banned media phash:", err)
+				break
+			}
+
+			current := goimagehash.NewImageHash(phash, 2)
+			distance, err := current.Distance(imagehash)
+			if err != nil {
+				config.Log.Println("IsMediaBanned: Error calculating distance between hashes:", err)
+				break
+			}
+
+			if distance == 0 {
+				config.Log.Printf("phash (%d) similar to banned hash (%d)", imagehash.GetHash(), current.GetHash())
+				return true, nil
 			}
 		}
 	}
 
-	f.Seek(0, 0)
-	fileBytes := make([]byte, 2048)
-	_, err := f.Read(fileBytes)
+	// Byte hashing
+	if _, err := f.Seek(0, 0); err != nil {
+		return false, util.MakeError(err, "IsMediaBanned")
+	}
 
+	fileBytes := make([]byte, 2048)
+	_, err = f.Read(fileBytes)
 	if err != nil {
-		return true, util.MakeError(err, "IsMediaBanned")
+		return false, util.MakeError(err, "IsMediaBanned")
 	}
 
 	hash := util.HashBytes(fileBytes)
-	f.Seek(0, 0)
+
+	if _, err := f.Seek(0, 0); err != nil {
+		return false, util.MakeError(err, "IsMediaBanned")
+	}
 
 	return IsHashBanned(hash)
 }

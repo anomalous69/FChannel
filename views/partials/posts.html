@@ -51,14 +51,14 @@
       <div class="postMenu-container">
           {{ if eq $board.ModCred $board.Domain $board.Actor.Id }}
           {{ if .Attachment }}
-          <a href="/banmedia?id={{ .Id }}&board={{ $board.Actor.PreferredUsername }}" onclick="return confirm('Ban Media?');">Ban Media</a>
-          <a href="/deleteattach?id={{ .Id }}&board={{ $board.Actor.PreferredUsername }}" onclick="return confirm('Delete Attachment?');">Delete Attachment</a>
-          <a href="/marksensitive?id={{ .Id }}&board={{ $board.Actor.PreferredUsername }}" onclick="return confirm('Mark Sensitive?');">Mark Sensitive</a>
-          <a href="/sticky?id={{ .Id }}&board={{ $board.Actor.PreferredUsername }}" onclick="return confirm('{{ if .Sticky }}Unsticky Thread?');">Unsticky{{else}}Sticky Thread?');">Sticky{{end}}</a>
-          <a href="/lock?id={{ .Id }}&board={{ $board.Actor.PreferredUsername }}" onclick="return confirm('{{ if .Locked }}Unlock Thread?');">Unlock{{else}}Lock Thread?');">Lock{{end}}</a>
+          <a class="postMenu-admin" href="/banmedia?id={{ .Id }}&board={{ $board.Actor.PreferredUsername }}" onclick="return confirm('Ban Media?');">Ban Media</a>
+          <a class="postMenu-admin" href="/deleteattach?id={{ .Id }}&board={{ $board.Actor.PreferredUsername }}" onclick="return confirm('Delete Attachment?');">Delete Attachment</a>
+          <a class="postMenu-admin" href="/marksensitive?id={{ .Id }}&board={{ $board.Actor.PreferredUsername }}" onclick="return confirm('Mark Sensitive?');">Mark Sensitive</a>
+          <a class="postMenu-admin" href="/sticky?id={{ .Id }}&board={{ $board.Actor.PreferredUsername }}" onclick="return confirm('{{ if .Sticky }}Unsticky Thread?');">Unsticky{{else}}Sticky Thread?');">Sticky{{end}}</a>
+          <a class="postMenu-admin" href="/lock?id={{ .Id }}&board={{ $board.Actor.PreferredUsername }}" onclick="return confirm('{{ if .Locked }}Unlock Thread?');">Unlock{{else}}Lock Thread?');">Lock{{end}}</a>
           {{ end }}
-          <a href="/delete?id={{ .Id }}&board={{ $board.Actor.PreferredUsername }}" onclick="return confirm('Delete Post?');">Delete Post</a>
-          <a href="/ban?actor={{ $board.Actor.Id }}&post={{ .Id }}">Ban IP</a>
+          <a class="postMenu-admin" href="/delete?id={{ .Id }}&board={{ $board.Actor.PreferredUsername }}" onclick="return confirm('Delete Post?');">Delete Post</a>
+          <a class="postMenu-admin" href="/ban?actor={{ $board.Actor.Id }}&post={{ .Id }}">Ban IP</a>
           {{ end }}
           <a href="/make-report?actor={{ $board.Actor.Id }}&post={{ .Id }}">Report post</a>
           <a id="hidebtn-{{ .Id }}" href="javascript:void(0);" onclick="hide(this)">Hide post <noscript>(JS)</noscript></a>
@@ -100,12 +100,12 @@
             <div class="postMenu-container">
                 {{ if eq $board.ModCred $board.Domain $board.Actor.Id }}
                 {{ if and (gt (len .Attachment) 0) (index .Attachment 0).Id }}
-                <a href="/banmedia?id={{ .Id }}&board={{ $board.Actor.PreferredUsername }}" onclick="return confirm('Ban Media?');">Ban Media</a>
-                <a href="/deleteattach?id={{ .Id }}&board={{ $board.Actor.PreferredUsername }}" onclick="return confirm('Delete Attachment?');">Delete Attachment</a>
-                <a href="/marksensitive?id={{ .Id }}&board={{ $board.Actor.PreferredUsername }}" onclick="return confirm('Mark Sensitive?');">Mark Sensitive</a>
+                <a class="postMenu-admin" href="/banmedia?id={{ .Id }}&board={{ $board.Actor.PreferredUsername }}" onclick="return confirm('Ban Media?');">Ban Media</a>
+                <a class="postMenu-admin" href="/deleteattach?id={{ .Id }}&board={{ $board.Actor.PreferredUsername }}" onclick="return confirm('Delete Attachment?');">Delete Attachment</a>
+                <a class="postMenu-admin" href="/marksensitive?id={{ .Id }}&board={{ $board.Actor.PreferredUsername }}" onclick="return confirm('Mark Sensitive?');">Mark Sensitive</a>
                 {{ end }}
-                <a href="/delete?id={{ .Id }}&board={{ $board.Actor.PreferredUsername }}" onclick="return confirm('Delete Post?');">Delete Post</a>
-                <a href="/ban?actor={{ $board.Actor.Id }}&post={{ .Id }}">Ban IP</a>
+                <a class="postMenu-admin" href="/delete?id={{ .Id }}&board={{ $board.Actor.PreferredUsername }}" onclick="return confirm('Delete Post?');">Delete Post</a>
+                <a class="postMenu-admin" href="/ban?actor={{ $board.Actor.Id }}&post={{ .Id }}">Ban IP</a>
                 {{ end }}
                 <a href="/make-report?actor={{ $board.Actor.Id }}&post={{ .Id }}">Report post</a>
                 <a id="hidebtn-{{ .Id }}" href="javascript:void(0);" onclick="hide(this)">Hide post <noscript>(JS)</noscript></a>

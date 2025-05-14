@@ -34,7 +34,7 @@ var CookieKey = GetConfigValue("cookiekey", "")
 var ActivityStreams = "application/ld+json; profile=\"https://www.w3.org/ns/activitystreams\""
 var AuthReq = []string{"captcha", "email", "passphrase"}
 var PostCountPerPage = 10
-var SupportedFiles = []string{"image/avif", "image/gif", "image/jpeg", "image/jxl", "image/png", "image/webp", "image/apng", "video/mp4", "video/ogg", "video/webm", "audio/mpeg", "audio/ogg", "audio/wav", "audio/wave", "audio/x-wav", "application/x-shockwave-flash"}
+var SupportedFiles = []string{"image/avif", "image/gif", "image/jpeg", "image/jxl", "image/png", "image/webp", "video/mp4", "video/ogg", "video/webm", "audio/mpeg", "audio/ogg", "audio/wav", "audio/wave", "audio/x-wav", "application/x-shockwave-flash"}
 var Log = log.New(os.Stdout, "", log.Ltime)
 var MediaHashs = make(map[string]string)
 var Key = GetConfigValue("modkey", "")

@@ -421,7 +421,8 @@ a.userEmail:hover span.name {
 .postMenu>.postMenu-container>a {
   border: 1px solid #928374;
   border-bottom: 1px solid #928374;
-  color: #ebdbb2
+  color: #ebdbb2;
+  background-color: #1d2021;
 }
 
 .postMenu>.postMenu-container>a:hover {

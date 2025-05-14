@@ -229,10 +229,6 @@ regex varchar(200)
 ALTER TABLE actor ADD COLUMN IF NOT EXISTS autosubscribe boolean default false;
 
 
-CREATE TABLE IF NOT EXISTS bannedimages(
-phash numeric UNIQUE NOT NULL
-);
-
 CREATE TABLE IF NOT EXISTS bannedips (
 ip inet NOT NULL,
 reason varchar(512),

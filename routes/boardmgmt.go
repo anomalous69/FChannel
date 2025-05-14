@@ -15,6 +15,10 @@ import (
 	"strings"
 	"time"
 
+	_ "github.com/gen2brain/avif"
+	_ "github.com/gen2brain/jpegxl"
+	_ "golang.org/x/image/webp"
+
 	"github.com/anomalous69/fchannel/activitypub"
 	"github.com/anomalous69/fchannel/config"
 
@@ -70,27 +74,35 @@ func BoardBanMedia(ctx *fiber.Ctx) error {
 
 	defer f.Close()
 
-	//TODO: Fall back to old method if anything fails
+	var banSuccess bool
 	mimetype, _ := util.GetFileContentType(f)
-	config.Log.Println("mimetype: " + mimetype)
-	if mimetype == "image/jpeg" || mimetype == "image/png" || mimetype == "image/gif" {
+	if mimetype == "image/jpeg" || mimetype == "image/png" || mimetype == "image/gif" ||
+		mimetype == "image/webp" || mimetype == "image/jxl" || mimetype == "image/avif" {
+		// Try phash first
 		image, _, err := image.Decode(f)
-		if err != nil {
-			return Send500(ctx, "Failed to ban media (server failed to decode image)", util.MakeError(err, "BoardBanMedia"))
-		}
+		if err == nil { // Only proceed with phash if image decode succeeded
+			phash, err := goimagehash.PerceptionHash(image)
+			if err == nil { // Only use phash if it succeeded
+				config.Log.Println("Banning phash: ", uint64(phash.GetHash()))
 
-		phash, err := goimagehash.PerceptionHash(image)
-		if err != nil {
-			return Send500(ctx, "Failed to ban media (server failed to hash image)", util.MakeError(err, "BoardBanMedia"))
+				// TODO: We should find other posts with similar phashes as well
+				query := `insert into bannedmedia (phash) values ($1) ON CONFLICT DO NOTHING`
+				if _, err := config.DB.Exec(query, uint64(phash.GetHash())); err != nil {
+					return Send500(ctx, "Failed to ban media (server failed to insert into database)", util.MakeError(err, "BoardBanMedia"))
+				}
+				banSuccess = true
+			}
 		}
-
-		config.Log.Println("Banning hash: ", uint64(phash.GetHash()))
-
-		query := `insert into bannedimages (phash) values ($1)`
-		if _, err := config.DB.Exec(query, uint64(phash.GetHash())); err != nil {
-			return Send500(ctx, "Failed to ban media (server failed to insert into database)", util.MakeError(err, "BoardBanMedia"))
+		if !banSuccess {
+			// If phash failed, seek back to start for HashBytes fallback
+			if _, err = f.Seek(0, 0); err != nil {
+				return Send500(ctx, "Failed to ban media (server failed to read file)", util.MakeError(err, "BoardBanMedia"))
+			}
 		}
-	} else {
+	}
+
+	if !banSuccess {
+		// Fallback to HashBytes for non-image files or if phash failed
 		bytes := make([]byte, 2048)
 
 		if _, err = f.Read(bytes); err != nil {
@@ -98,7 +110,8 @@ func BoardBanMedia(ctx *fiber.Ctx) error {
 		}
 
 		if banned, err := db.IsMediaBanned(f); err == nil && !banned {
-			query := `insert into bannedmedia (hash) values ($1)`
+			// TODO: Find other posts with the same hash
+			query := `insert into bannedmedia (hash) values ($1) ON CONFLICT DO NOTHING`
 			if _, err := config.DB.Exec(query, util.HashBytes(bytes)); err != nil {
 				return Send500(ctx, "Failed to ban media", util.MakeError(err, "BoardBanMedia"))
 			}

@@ -141,3 +141,10 @@ div.pagelist {
 .button {
   cursor: pointer;
 }
+
+.postMenu-admin::before {
+  color: #FF0000;
+  content: "•";
+  left: -2px;
+  position: inherit
+}

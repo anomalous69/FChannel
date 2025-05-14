@@ -265,6 +265,10 @@ func MakeActorPost(ctx *fiber.Ctx) error {
 			file.Close()
 			return Send400(ctx, "New threads on this board must have a SWF file")
 		}
+		if !util.SupportedMIMEType(contentType) {
+			file.Close()
+			return Send400(ctx, "Unsupported file type: "+contentType)
+		}
 	}
 
 	// Attachment filename too long

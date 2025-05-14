@@ -233,6 +233,24 @@ func GetFileContentType(out multipart.File) (string, error) {
 	out.Seek(0, 0)
 	contentType := mimetype.Detect(buffer).String()
 
+	// Handle APNG content types
+	if contentType == "image/vnd.mozilla.apng" || contentType == "image/apng" {
+		contentType = "image/png"
+	}
+
+	// Check for AVIF file with mif1 major brand
+	if contentType == "image/heif" && len(buffer) >= 32 {
+		if buffer[4] == 'f' && buffer[5] == 't' && buffer[6] == 'y' && buffer[7] == 'p' && // ftyp
+			buffer[8] == 'm' && buffer[9] == 'i' && buffer[10] == 'f' && buffer[11] == '1' { // mif1
+			// Look for 'avif' brand in compatible brands list
+			for i := 16; i <= len(buffer)-4; i += 4 {
+				if buffer[i] == 'a' && buffer[i+1] == 'v' && buffer[i+2] == 'i' && buffer[i+3] == 'f' {
+					return "image/avif", nil
+				}
+			}
+		}
+	}
+
 	return contentType, nil
 }
 
